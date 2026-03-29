@@ -159,3 +159,26 @@
     @apply font-sans;
   }
 }
+
+/* =============================================
+ * Portfolio utilities
+ * ============================================= */
+@layer utilities {
+  /* 4-layer card shadow from Sawad spec */
+  .shadow-card {
+    box-shadow:
+      0px 0.64px 1.15px -1.125px rgba(0, 0, 0, 0.26),
+      0px 1.93px 3.48px -2.25px rgba(0, 0, 0, 0.24),
+      0px 5.11px 9.19px -3.375px rgba(0, 0, 0, 0.19),
+      0px 16px 28.8px -4.5px rgba(0, 0, 0, 0.03);
+  }
+}
+
+/* Marquee animation for SkillsSection */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}

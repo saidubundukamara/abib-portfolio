@@ -1,11 +1,5 @@
 import mongoose from 'mongoose'
 
-const MONGODB_URI = process.env.MONGODB_URI!
-
-if (!MONGODB_URI) {
-  throw new Error('MONGODB_URI env var is not set')
-}
-
 declare global {
   // eslint-disable-next-line no-var
   var _mongoose: {
@@ -17,6 +11,9 @@ declare global {
 const cached = global._mongoose ?? (global._mongoose = { conn: null, promise: null })
 
 export async function connectDB() {
+  const MONGODB_URI = process.env.MONGODB_URI
+  if (!MONGODB_URI) throw new Error('MONGODB_URI env var is not set')
+
   if (cached.conn) return cached.conn
 
   if (!cached.promise) {
