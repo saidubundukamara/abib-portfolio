@@ -8,6 +8,7 @@ import { serialize } from '@/lib/serialize'
 import { renderTiptap } from '@/lib/tiptap'
 import { Project } from '@/models/Project'
 import ProjectCard from '@/components/public/ProjectCard'
+import { canonicalUrl, ogImages } from '@/lib/seo'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -29,15 +30,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     await connectDB()
     const project = await Project.findOne({ slug, published: true }).lean()
     if (!project) return {}
+
+    const title       = (project.metadata?.ogTitle       as string) || project.title
+    const description = (project.metadata?.ogDescription as string) || project.excerpt
+    const imageUrl    = (project.metadata?.ogImage        as string) || project.coverImageUrl || ''
+
     return {
-      title: project.metadata?.ogTitle || project.title,
-      description: project.metadata?.ogDescription || project.excerpt,
+      title,
+      description,
+      alternates: {
+        canonical: canonicalUrl(`/work/${slug}`),
+      },
       openGraph: {
-        title: project.metadata?.ogTitle || project.title,
-        description: project.metadata?.ogDescription || project.excerpt,
-        images: project.metadata?.ogImage || project.coverImageUrl
-          ? [{ url: (project.metadata?.ogImage || project.coverImageUrl) as string }]
-          : [],
+        title,
+        description,
+        url: canonicalUrl(`/work/${slug}`),
+        type: 'article',
+        images: ogImages(imageUrl),
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: imageUrl ? [imageUrl] : [],
       },
     }
   } catch {

@@ -73,6 +73,10 @@
   --radius-btn: 8px;
   --radius-card: 8px;
   --radius-nav: 16px;
+  --radius-profile-card: 24px;
+
+  /* Ghost heading — barely visible against dark bg */
+  --color-heading-ghost: rgb(38, 36, 35);
 }
 
 /* shadcn base variables */
@@ -181,4 +185,23 @@
 }
 .animate-marquee {
   animation: marquee 25s linear infinite;
+}
+
+/* Cursor blink for TextType */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.animate-cursor-blink {
+  animation: cursor-blink 1s step-end infinite;
+}
+
+/* Flame icon pulse for ProfileCard */
+@keyframes flame-pulse {
+  0%, 100% { transform: scale(1) rotate(-3deg); }
+  50%       { transform: scale(1.15) rotate(3deg); }
+}
+.animate-flame {
+  animation: flame-pulse 2.5s ease-in-out infinite;
+  display: inline-block;
 }

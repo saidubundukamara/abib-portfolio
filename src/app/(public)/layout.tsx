@@ -1,12 +1,10 @@
-import NavBar from '@/components/public/NavBar'
-import Footer from '@/components/public/Footer'
+import IconNavPill from '@/components/public/IconNavPill'
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <NavBar />
-      <main className="flex-1">{children}</main>
-      <Footer />
-    </>
+    <div className="min-h-screen bg-bg-primary">
+      <IconNavPill />
+      {children}
+    </div>
   )
 }

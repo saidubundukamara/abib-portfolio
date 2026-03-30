@@ -7,6 +7,7 @@ import { connectDB } from '@/lib/mongodb'
 import { serialize } from '@/lib/serialize'
 import { renderTiptap } from '@/lib/tiptap'
 import { DesignThought } from '@/models/DesignThought'
+import { canonicalUrl, ogImages } from '@/lib/seo'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -28,15 +29,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     await connectDB()
     const thought = await DesignThought.findOne({ slug, published: true }).lean()
     if (!thought) return {}
+
+    const title       = (thought.metadata?.ogTitle       as string) || thought.title
+    const description = (thought.metadata?.ogDescription as string) || thought.excerpt
+    const imageUrl    = (thought.metadata?.ogImage        as string) || thought.coverImageUrl || ''
+
     return {
-      title: thought.metadata?.ogTitle || thought.title,
-      description: thought.metadata?.ogDescription || thought.excerpt,
+      title,
+      description,
+      alternates: {
+        canonical: canonicalUrl(`/thoughts/${slug}`),
+      },
       openGraph: {
-        title: thought.metadata?.ogTitle || thought.title,
-        description: thought.metadata?.ogDescription || thought.excerpt,
-        images: thought.metadata?.ogImage || thought.coverImageUrl
-          ? [{ url: (thought.metadata?.ogImage || thought.coverImageUrl) as string }]
-          : [],
+        title,
+        description,
+        url: canonicalUrl(`/thoughts/${slug}`),
+        type: 'article',
+        images: ogImages(imageUrl),
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: imageUrl ? [imageUrl] : [],
       },
     }
   } catch {

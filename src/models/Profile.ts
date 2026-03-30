@@ -10,6 +10,7 @@ const ProfileSchema = new Schema({
     twitter:   { type: String, default: '' },
     instagram: { type: String, default: '' },
     email:     { type: String, default: '' },
+    youtube:   { type: String, default: '' },
   },
   yearsOfExperience: { type: Number, default: 0 },
   projectsCompleted: { type: Number, default: 0 },

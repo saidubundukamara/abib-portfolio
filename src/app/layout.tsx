@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import localFont from "next/font/local";
 import "@/styles/globals.css";
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, TWITTER_HANDLE } from "@/lib/seo";
 
 const poppins = Poppins({
   variable: "--font-sans",
@@ -18,8 +19,28 @@ const satoshi = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Designer Portfolio",
-  description: "Product, Graphics & Motion Designer",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} | Portfolio`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} | Portfolio`,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: TWITTER_HANDLE,
+    creator: TWITTER_HANDLE,
+    title: `${SITE_NAME} | Portfolio`,
+    description: SITE_DESCRIPTION,
+  },
+  manifest: "/manifest.json",
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({

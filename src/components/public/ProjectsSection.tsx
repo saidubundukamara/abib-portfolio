@@ -1,42 +1,57 @@
+import Image from 'next/image'
 import Link from 'next/link'
-import ProjectCard from './ProjectCard'
+import { ArrowUpRight } from 'lucide-react'
+import SectionHeading from './SectionHeading'
 import type { SerializedProject } from '@/types'
 
 interface Props {
   projects: SerializedProject[]
-  title?: string
-  showViewAll?: boolean
 }
 
-export default function ProjectsSection({
-  projects,
-  title = 'RECENT PROJECTS',
-  showViewAll = true,
-}: Props) {
+export default function ProjectsSection({ projects }: Props) {
   return (
-    <section className="py-20 px-4 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="flex items-end justify-between mb-10">
-        <h2 className="font-bold uppercase tracking-[-0.04em] text-text-secondary text-xs sm:text-sm">
-          {title}
-        </h2>
-        {showViewAll && (
-          <Link
-            href="/work"
-            className="bg-accent-orange hover:bg-accent-lime text-white font-display font-bold
-              text-[13px] rounded-btn px-4 py-2 transition-colors duration-200"
-          >
-            View All Work
-          </Link>
-        )}
-      </div>
+    <section id="projects" className="py-12 lg:py-16">
+      <SectionHeading white="RECENT" ghost="PROJECTS" />
 
       {projects.length === 0 ? (
         <p className="text-text-muted text-sm">No projects yet.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div>
           {projects.map((project) => (
-            <ProjectCard key={project._id} project={project} />
+            <Link
+              key={project._id}
+              href={`/work/${project.slug}`}
+              className="flex items-center gap-4 py-5 border-b border-[rgba(255,255,255,0.06)]
+                hover:bg-[rgba(255,255,255,0.02)] transition-colors group"
+            >
+              {/* Thumbnail */}
+              <div className="relative shrink-0 w-[72px] h-[72px] rounded-lg overflow-hidden bg-[rgba(255,255,255,0.05)]">
+                {project.coverImageUrl && (
+                  <Image
+                    src={project.coverImageUrl}
+                    alt={project.title}
+                    fill
+                    className="object-cover"
+                    sizes="72px"
+                  />
+                )}
+              </div>
+
+              {/* Text */}
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-text-primary text-base leading-snug">
+                  {project.title}
+                </h3>
+                {project.excerpt && (
+                  <p className="text-text-secondary text-sm mt-0.5 truncate">
+                    {project.excerpt}
+                  </p>
+                )}
+              </div>
+
+              {/* Arrow */}
+              <ArrowUpRight size={18} className="text-accent-orange shrink-0" />
+            </Link>
           ))}
         </div>
       )}
