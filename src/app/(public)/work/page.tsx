@@ -1,10 +1,12 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { connectDB } from '@/lib/mongodb'
 import { serialize } from '@/lib/serialize'
 import { Project } from '@/models/Project'
 import { PROJECT_CATEGORIES, CATEGORY_LABELS } from '@/lib/categories'
+import TwoColLayout from '@/components/public/TwoColLayout'
+import SectionHeading from '@/components/public/SectionHeading'
 import ProjectCard from '@/components/public/ProjectCard'
-import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Work',
@@ -29,11 +31,8 @@ export default async function WorkPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="min-h-screen pt-28 pb-20 px-4 max-w-5xl mx-auto">
-      <h1 className="font-bold text-text-primary text-3xl md:text-4xl mb-3">Work</h1>
-      <p className="text-text-secondary text-sm mb-10">
-        A collection of design projects across brand, motion, and digital.
-      </p>
+    <TwoColLayout>
+      <SectionHeading white="RECENT" ghost="PROJECTS" />
 
       {/* Category filter tabs */}
       <div className="flex flex-wrap gap-2 mb-10">
@@ -72,6 +71,6 @@ export default async function WorkPage({ searchParams }: Props) {
           ))}
         </div>
       )}
-    </div>
+    </TwoColLayout>
   )
 }
