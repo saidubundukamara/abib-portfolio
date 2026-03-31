@@ -9,8 +9,8 @@ export default function AnimatedHeading() {
     <div className="mb-10 select-none leading-none">
       {/* Animated white line */}
       <div
-        className="font-display font-bold uppercase text-text-primary block"
-        style={{ fontSize: 'clamp(44px, 8vw, 110px)', lineHeight: 1 }}
+        className="font-display font-black uppercase text-text-primary block"
+        style={{ fontSize: 'clamp(36px, 6.8vw, 96px)', lineHeight: 1, WebkitTextStroke: '1.5px white' }}
       >
         <TextType
           text={words}
@@ -24,8 +24,8 @@ export default function AnimatedHeading() {
       </div>
       {/* Ghost / muted static line */}
       <div
-        className="font-display font-bold uppercase text-[rgb(38,36,35)]"
-        style={{ fontSize: 'clamp(44px, 8vw, 110px)', lineHeight: 1 }}
+        className="font-display font-black uppercase text-[rgb(38,36,35)]"
+        style={{ fontSize: 'clamp(36px, 6.8vw, 96px)', lineHeight: 1, WebkitTextStroke: '1.5px rgb(38,36,35)' }}
       >
         DESIGNER
       </div>

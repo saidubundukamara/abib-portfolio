@@ -6,6 +6,7 @@ import { Tool } from '@/models/Tool'
 import { DesignThought } from '@/models/DesignThought'
 
 import ProfileCard from '@/components/public/ProfileCard'
+import StickyProfileWrapper from '@/components/public/StickyProfileWrapper'
 import HeroSection from '@/components/public/HeroSection'
 import ProjectsSection from '@/components/public/ProjectsSection'
 import ExperienceSection from '@/components/public/ExperienceSection'
@@ -38,15 +39,12 @@ export default async function HomePage() {
   const serializedProfile = profile ? serialize(profile) : null
 
   return (
-    <div className="flex min-h-screen pt-16 max-w-[1400px] mx-auto px-4 lg:px-8">
-      {/* LEFT: sticky profile card — wide enough for 320px card + breathing room */}
+    <div className="flex min-h-screen pt-16 max-w-[1400px] mx-auto px-6 lg:px-16 gap-8 lg:gap-12">
+      {/* LEFT: sticky profile card */}
       <aside className="hidden lg:block lg:w-[400px] xl:w-[440px] shrink-0">
-        <div
-          className="sticky flex items-center justify-center"
-          style={{ top: '4rem', height: 'calc(100vh - 4rem)' }}
-        >
+        <StickyProfileWrapper>
           <ProfileCard profile={serializedProfile} />
-        </div>
+        </StickyProfileWrapper>
       </aside>
 
       {/* RIGHT: scrollable content sections */}

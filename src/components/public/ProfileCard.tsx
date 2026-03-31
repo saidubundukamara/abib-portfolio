@@ -25,7 +25,7 @@ export default function ProfileCard({ profile }: Props) {
      * decoration room to peek out from behind the white card.
      * Fixed width matches reference: ~320px outer → ~292px white card.
      */
-    <div style={{ position: 'relative', width: '320px', padding: '14px', flexShrink: 0 }}>
+    <div style={{ position: 'relative', width: '360px', padding: '14px', flexShrink: 0 }}>
 
       {/* ── Dashed orange decoration ──────────────────────────── */}
       <svg
@@ -38,11 +38,11 @@ export default function ProfileCard({ profile }: Props) {
           zIndex: 0,
           pointerEvents: 'none',
         }}
-        viewBox="0 0 320 560"
+        viewBox="0 0 360 675"
         preserveAspectRatio="none"
       >
         <rect
-          x="3" y="3" width="314" height="554"
+          x="3" y="3" width="354" height="669"
           rx="26" ry="26"
           fill="none"
           stroke="rgb(244,108,56)"
@@ -70,7 +70,7 @@ export default function ProfileCard({ profile }: Props) {
               position: 'relative',
               width: '100%',
               /* Slightly portrait ratio — ref card photo is ~264×280px */
-              aspectRatio: '15 / 16',
+              aspectRatio: '4 / 5',
               backgroundColor: 'rgb(244, 108, 56)',
               borderRadius: '14px',
               overflow: 'hidden',
@@ -81,7 +81,7 @@ export default function ProfileCard({ profile }: Props) {
               alt={profile?.name ?? 'Profile'}
               fill
               className="object-cover object-top"
-              sizes="292px"
+              sizes="332px"
               priority
             />
           </div>
