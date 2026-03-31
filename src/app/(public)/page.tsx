@@ -13,6 +13,7 @@ import ExperienceSection from '@/components/public/ExperienceSection'
 import ToolsSection from '@/components/public/ToolsSection'
 import ThoughtsSection from '@/components/public/ThoughtsSection'
 import ContactSection from '@/components/public/ContactSection'
+import FadeContent from '@/components/public/FadeContent'
 
 export default async function HomePage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,12 +50,24 @@ export default async function HomePage() {
 
       {/* RIGHT: scrollable content sections */}
       <main className="flex-1 min-w-0 py-8 lg:py-12">
-        <HeroSection profile={serializedProfile} />
-        <ProjectsSection projects={serialize(featuredProjects)} />
-        <ExperienceSection />
-        <ToolsSection tools={serialize(tools)} />
-        <ThoughtsSection thoughts={serialize(thoughts)} />
-        <ContactSection />
+        <FadeContent duration={800} ease="power2.out">
+          <HeroSection profile={serializedProfile} />
+        </FadeContent>
+        <FadeContent duration={800} ease="power2.out">
+          <ProjectsSection projects={serialize(featuredProjects)} />
+        </FadeContent>
+        <FadeContent duration={800} ease="power2.out">
+          <ExperienceSection />
+        </FadeContent>
+        <FadeContent duration={800} ease="power2.out">
+          <ToolsSection tools={serialize(tools)} />
+        </FadeContent>
+        <FadeContent duration={800} ease="power2.out">
+          <ThoughtsSection thoughts={serialize(thoughts)} />
+        </FadeContent>
+        <FadeContent duration={800} ease="power2.out">
+          <ContactSection />
+        </FadeContent>
       </main>
     </div>
   )

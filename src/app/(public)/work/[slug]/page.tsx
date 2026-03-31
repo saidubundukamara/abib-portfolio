@@ -8,6 +8,7 @@ import { serialize } from '@/lib/serialize'
 import { renderTiptap } from '@/lib/tiptap'
 import { Project } from '@/models/Project'
 import ProjectCard from '@/components/public/ProjectCard'
+import FadeContent from '@/components/public/FadeContent'
 import { canonicalUrl, ogImages } from '@/lib/seo'
 import ContactSection from '@/components/public/ContactSection'
 
@@ -90,93 +91,107 @@ export default async function ProjectDetailPage({ params }: Props) {
     <div className="min-h-screen pt-24 pb-20">
       {/* Cover image */}
       {s.coverImageUrl && (
-        <div className="relative w-full h-[40vh] md:h-[55vh] bg-[rgba(255,255,255,0.05)]">
-          <Image
-            src={s.coverImageUrl}
-            alt={s.title}
-            fill
-            className="object-cover"
-            priority
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-bg-primary via-transparent to-transparent" />
-        </div>
+        <FadeContent duration={800} ease="power2.out">
+          <div className="relative w-full h-[40vh] md:h-[55vh] bg-[rgba(255,255,255,0.05)]">
+            <Image
+              src={s.coverImageUrl}
+              alt={s.title}
+              fill
+              className="object-cover"
+              priority
+              sizes="100vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-bg-primary via-transparent to-transparent" />
+          </div>
+        </FadeContent>
       )}
 
       <div className="max-w-3xl mx-auto px-4 mt-10">
-        {/* Back link */}
-        <Link
-          href="/work"
-          className="text-text-muted hover:text-accent-orange text-sm transition-colors mb-8 inline-block"
-        >
-          ← Back to Work
-        </Link>
+        {/* Back link + header */}
+        <FadeContent duration={700} ease="power2.out">
+          <Link
+            href="/work"
+            className="text-text-muted hover:text-accent-orange text-sm transition-colors mb-8 inline-block"
+          >
+            ← Back to Work
+          </Link>
 
-        {/* Category + date */}
-        <div className="flex items-center gap-4 mb-4">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-accent-orange">
-            {s.category.replace(/-/g, ' ')}
-          </span>
-          {s.publishedAt && (
-            <time className="text-text-muted text-xs">
-              {format(new Date(s.publishedAt), 'MMMM d, yyyy')}
-            </time>
-          )}
-        </div>
+          {/* Category + date */}
+          <div className="flex items-center gap-4 mb-4">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-accent-orange">
+              {s.category.replace(/-/g, ' ')}
+            </span>
+            {s.publishedAt && (
+              <time className="text-text-muted text-xs">
+                {format(new Date(s.publishedAt), 'MMMM d, yyyy')}
+              </time>
+            )}
+          </div>
 
-        {/* Title */}
-        <h1 className="font-bold text-text-primary text-3xl md:text-5xl leading-tight mb-4">
-          {s.title}
-        </h1>
+          {/* Title */}
+          <h1 className="font-bold text-text-primary text-3xl md:text-5xl leading-tight mb-4">
+            {s.title}
+          </h1>
 
-        {/* Excerpt */}
-        <p className="text-text-secondary text-lg leading-relaxed mb-10">{s.excerpt}</p>
+          {/* Excerpt */}
+          <p className="text-text-secondary text-lg leading-relaxed mb-10">{s.excerpt}</p>
+        </FadeContent>
 
         {/* Rich text content */}
         {html && (
-          <div
-            className="prose prose-invert prose-sm md:prose-base max-w-none
-              prose-headings:text-text-primary prose-p:text-text-secondary
-              prose-a:text-accent-cyan prose-strong:text-text-primary
-              prose-img:rounded-card prose-img:shadow-card"
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
+          <FadeContent duration={700} delay={100} ease="power2.out">
+            <div
+              className="prose prose-invert prose-sm md:prose-base max-w-none
+                prose-headings:text-text-primary prose-p:text-text-secondary
+                prose-a:text-accent-cyan prose-strong:text-text-primary
+                prose-img:rounded-card prose-img:shadow-card"
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
+          </FadeContent>
         )}
 
         {/* Tools used */}
         {s.tools && s.tools.length > 0 && (
-          <div className="mt-12 pt-8 border-t border-[rgba(255,255,255,0.08)]">
-            <h3 className="font-bold uppercase tracking-[-0.04em] text-text-secondary text-xs mb-4">
-              Tools Used
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {(s.tools as string[]).map((tool: string) => (
-                <span
-                  key={tool}
-                  className="px-3 py-1 rounded-btn bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-text-secondary text-xs"
-                >
-                  {tool}
-                </span>
-              ))}
+          <FadeContent duration={600} delay={150} ease="power2.out">
+            <div className="mt-12 pt-8 border-t border-[rgba(255,255,255,0.08)]">
+              <h3 className="font-bold uppercase tracking-[-0.04em] text-text-secondary text-xs mb-4">
+                Tools Used
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {(s.tools as string[]).map((tool: string) => (
+                  <span
+                    key={tool}
+                    className="px-3 py-1 rounded-btn bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-text-secondary text-xs"
+                  >
+                    {tool}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
+          </FadeContent>
         )}
 
         {/* Related projects */}
         {related.length > 0 && (
           <div className="mt-16">
-            <h3 className="font-bold uppercase tracking-[-0.04em] text-text-secondary text-xs mb-8">
-              Related Projects
-            </h3>
+            <FadeContent duration={600} ease="power2.out">
+              <h3 className="font-bold uppercase tracking-[-0.04em] text-text-secondary text-xs mb-8">
+                Related Projects
+              </h3>
+            </FadeContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {serialize(related).map((p) => (
-                <ProjectCard key={p._id} project={p} />
+              {serialize(related).map((p, i) => (
+                <FadeContent key={p._id} duration={600} delay={i * 80} ease="power2.out">
+                  <ProjectCard project={p} />
+                </FadeContent>
               ))}
             </div>
           </div>
         )}
 
-        <ContactSection />
+        <FadeContent duration={700} ease="power2.out">
+          <ContactSection />
+        </FadeContent>
       </div>
     </div>
   )

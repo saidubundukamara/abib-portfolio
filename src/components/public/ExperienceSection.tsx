@@ -1,5 +1,6 @@
 import { ArrowUpRight } from 'lucide-react'
 import SectionHeading from './SectionHeading'
+import FadeContent from './FadeContent'
 
 const experiences = [
   {
@@ -29,18 +30,17 @@ export default function ExperienceSection() {
 
       <div>
         {experiences.map(({ company, role, desc, period }, i) => (
-          <div
-            key={i}
-            className="relative py-5 border-b border-[rgba(255,255,255,0.06)] pr-8"
-          >
-            <ArrowUpRight
-              size={16}
-              className="absolute top-5 right-0 text-accent-orange"
-            />
-            <h3 className="font-bold text-text-primary text-base">{company}</h3>
-            <p className="text-text-secondary text-sm mt-1 leading-relaxed">{desc}</p>
-            <time className="text-text-secondary text-xs mt-2 block">{period}</time>
-          </div>
+          <FadeContent key={i} duration={600} delay={i * 60} ease="power2.out">
+            <div className="relative py-5 border-b border-[rgba(255,255,255,0.06)] pr-8">
+              <ArrowUpRight
+                size={16}
+                className="absolute top-5 right-0 text-accent-orange"
+              />
+              <h3 className="font-bold text-text-primary text-base">{company}</h3>
+              <p className="text-text-secondary text-sm mt-1 leading-relaxed">{desc}</p>
+              <time className="text-text-secondary text-xs mt-2 block">{period}</time>
+            </div>
+          </FadeContent>
         ))}
       </div>
     </section>

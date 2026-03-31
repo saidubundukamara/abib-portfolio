@@ -5,6 +5,7 @@ import { DesignThought } from '@/models/DesignThought'
 import TwoColLayout from '@/components/public/TwoColLayout'
 import SectionHeading from '@/components/public/SectionHeading'
 import ThoughtCard from '@/components/public/ThoughtCard'
+import FadeContent from '@/components/public/FadeContent'
 
 export const metadata: Metadata = {
   title: 'Thoughts',
@@ -25,14 +26,18 @@ export default async function ThoughtsPage() {
 
   return (
     <TwoColLayout>
-      <SectionHeading white="DESIGN" ghost="THOUGHTS" />
+      <FadeContent duration={700} ease="power2.out">
+        <SectionHeading white="DESIGN" ghost="THOUGHTS" />
+      </FadeContent>
 
       {thoughts.length === 0 ? (
         <p className="text-text-muted text-sm">No articles published yet.</p>
       ) : (
         <div className="flex flex-col gap-4">
-          {serialize(thoughts).map((thought) => (
-            <ThoughtCard key={thought._id} thought={thought} />
+          {serialize(thoughts).map((thought, i) => (
+            <FadeContent key={thought._id} duration={600} delay={i * 70} ease="power2.out">
+              <ThoughtCard thought={thought} />
+            </FadeContent>
           ))}
         </div>
       )}

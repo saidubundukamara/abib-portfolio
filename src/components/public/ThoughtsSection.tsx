@@ -1,5 +1,6 @@
 import SectionHeading from './SectionHeading'
 import ThoughtCard from './ThoughtCard'
+import FadeContent from './FadeContent'
 import type { SerializedThought } from '@/types'
 
 interface Props {
@@ -15,8 +16,10 @@ export default function ThoughtsSection({ thoughts }: Props) {
         <p className="text-text-muted text-sm">No articles published yet.</p>
       ) : (
         <div>
-          {thoughts.map((thought) => (
-            <ThoughtCard key={thought._id} thought={thought} />
+          {thoughts.map((thought, i) => (
+            <FadeContent key={thought._id} duration={600} delay={i * 70} ease="power2.out">
+              <ThoughtCard thought={thought} />
+            </FadeContent>
           ))}
         </div>
       )}
