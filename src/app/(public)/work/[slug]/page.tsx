@@ -9,6 +9,7 @@ import { renderTiptap } from '@/lib/tiptap'
 import { Project } from '@/models/Project'
 import ProjectCard from '@/components/public/ProjectCard'
 import { canonicalUrl, ogImages } from '@/lib/seo'
+import ContactSection from '@/components/public/ContactSection'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -174,6 +175,8 @@ export default async function ProjectDetailPage({ params }: Props) {
             </div>
           </div>
         )}
+
+        <ContactSection />
       </div>
     </div>
   )

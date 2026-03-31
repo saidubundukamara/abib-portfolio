@@ -8,6 +8,7 @@ import { serialize } from '@/lib/serialize'
 import { renderTiptap } from '@/lib/tiptap'
 import { DesignThought } from '@/models/DesignThought'
 import { canonicalUrl, ogImages } from '@/lib/seo'
+import ContactSection from '@/components/public/ContactSection'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -128,6 +129,8 @@ export default async function ThoughtDetailPage({ params }: Props) {
             dangerouslySetInnerHTML={{ __html: html }}
           />
         )}
+
+        <ContactSection />
       </div>
     </div>
   )
