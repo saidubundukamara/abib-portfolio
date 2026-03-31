@@ -25,7 +25,6 @@ export default function ContactSection() {
           <p className="text-2xl font-bold text-text-primary mb-2">Message sent! 🎉</p>
           <p className="text-text-secondary text-sm">I&apos;ll get back to you within 24 hours.</p>
         </div>
-        <Footer />
       </section>
     )
   }
@@ -102,15 +101,6 @@ export default function ContactSection() {
         </button>
       </form>
 
-      <Footer />
     </section>
-  )
-}
-
-function Footer() {
-  return (
-    <p className="text-text-secondary text-xs text-center mt-16 pb-8">
-      Made by Abib &nbsp;·&nbsp; Portfolio {new Date().getFullYear()}
-    </p>
   )
 }
