@@ -2,7 +2,6 @@ import Image from 'next/image'
 import { SiDribbble, SiX, SiInstagram, SiYoutube } from 'react-icons/si'
 import type { SerializedProfile } from '@/types'
 
-// Fallback Unsplash model for demo
 const FALLBACK_AVATAR = 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80'
 
 interface Props {
@@ -21,57 +20,106 @@ export default function ProfileCard({ profile }: Props) {
 
   return (
     /*
-     * Outer wrapper — 14px padding on all sides gives the rotated SVG
-     * decoration room to peek out from behind the white card.
-     * Fixed width matches reference: ~320px outer → ~292px white card.
+     * Outer wrapper — 16px padding gives the rotated dashed-rect decoration
+     * room to peek out from behind the white card on all sides.
      */
-    <div style={{ position: 'relative', width: '360px', padding: '14px', flexShrink: 0 }}>
+    <div style={{ position: 'relative', width: '360px', padding: '16px', flexShrink: 0 }}>
 
-      {/* ── Dashed orange decoration ──────────────────────────── */}
+      {/* ── Dashed orange border rectangle, slightly counter-rotated ── */}
       <svg
         aria-hidden="true"
         style={{
           position: 'absolute',
-          top: 0, left: 0,
-          width: '100%', height: '100%',
+          inset: 0,
+          width: '100%',
+          height: '100%',
           transform: 'rotate(-2.5deg)',
           zIndex: 0,
           pointerEvents: 'none',
         }}
-        viewBox="0 0 360 675"
+        viewBox="0 0 360 700"
         preserveAspectRatio="none"
       >
         <rect
-          x="3" y="3" width="354" height="669"
-          rx="26" ry="26"
+          x="3" y="3" width="354" height="694"
+          rx="28" ry="28"
           fill="none"
           stroke="rgb(244,108,56)"
-          strokeWidth="2"
-          strokeDasharray="8 6"
+          strokeWidth="2.2"
+          strokeDasharray="9 6"
         />
       </svg>
 
-      {/* ── White card ────────────────────────────────────────── */}
+      {/* ── White card ─────────────────────────────────────────────── */}
       <div
         style={{
-          position: 'relative', zIndex: 1,
-          backgroundColor: 'white',
-          borderRadius: '22px',
+          position: 'relative',
+          zIndex: 1,
+          backgroundColor: '#ffffff',
+          borderRadius: '24px',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
         }}
       >
-        {/* Photo — 14px inset on sides + top, own 14px border-radius */}
+
+        {/* Internal arc 1 — sweeps from mid-left across the top of the photo */}
+        <svg
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '440px',
+            zIndex: 2,
+            pointerEvents: 'none',
+          }}
+          viewBox="0 0 328 440"
+          fill="none"
+        >
+          <path
+            d="M -24 210 Q 100 -10 310 55"
+            stroke="rgb(244,108,56)"
+            strokeWidth="2.5"
+            strokeDasharray="9 6"
+            strokeLinecap="round"
+          />
+        </svg>
+
+        {/* Internal arc 2 — sweeps from below the flame icon toward lower-left */}
+        <svg
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '55%',
+            height: '220px',
+            zIndex: 2,
+            pointerEvents: 'none',
+          }}
+          viewBox="0 0 200 220"
+          fill="none"
+        >
+          <path
+            d="M 155 30 Q 90 90 -10 200"
+            stroke="rgb(244,108,56)"
+            strokeWidth="2.5"
+            strokeDasharray="9 6"
+            strokeLinecap="round"
+          />
+        </svg>
+
+        {/* ── Photo ───────────────────────────────────────────────── */}
         <div style={{ padding: '14px 14px 0 14px', width: '100%' }}>
           <div
             style={{
               position: 'relative',
               width: '100%',
-              /* Slightly portrait ratio — ref card photo is ~264×280px */
               aspectRatio: '4 / 5',
-              backgroundColor: 'rgb(244, 108, 56)',
+              backgroundColor: 'rgb(244,108,56)',
               borderRadius: '14px',
               overflow: 'hidden',
             }}
@@ -81,68 +129,73 @@ export default function ProfileCard({ profile }: Props) {
               alt={profile?.name ?? 'Profile'}
               fill
               className="object-cover object-top"
-              sizes="332px"
+              sizes="300px"
               priority
             />
           </div>
         </div>
 
-        {/* Name + flame + bio + socials */}
+        {/* ── Text content ────────────────────────────────────────── */}
         <div
           style={{
+            position: 'relative',
+            zIndex: 3,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '12px',
-            padding: '20px 24px 24px',
+            gap: '14px',
+            padding: '22px 24px 30px',
             width: '100%',
           }}
         >
           {/* Name */}
           <h2
             style={{
-              fontFamily: 'var(--font-display)',
-              fontWeight: 700,
-              fontSize: '22px',
-              color: 'rgb(21, 19, 18)',
+              fontFamily: 'var(--font-sans)',
+              fontWeight: 800,
+              fontSize: '34px',
+              color: 'rgb(14,13,12)',
               textAlign: 'center',
-              lineHeight: 1.2,
+              lineHeight: 1.1,
+              letterSpacing: '-0.02em',
               margin: 0,
             }}
           >
             {profile?.name ?? 'Your Name'}
           </h2>
 
-          {/* Flame icon in subtle orange circle */}
+          {/* Flame — solid vivid orange disc */}
           <div
             style={{
-              width: '38px', height: '38px',
+              width: '46px',
+              height: '46px',
               borderRadius: '50%',
-              backgroundColor: 'rgba(244, 108, 56, 0.12)',
+              backgroundColor: 'rgb(244,108,56)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginTop: '-4px',
+              flexShrink: 0,
             }}
           >
-            <span className="animate-flame" style={{ fontSize: '17px', lineHeight: 1 }}>🔥</span>
+            <span style={{ fontSize: '21px', lineHeight: 1 }}>🔥</span>
           </div>
 
           {/* Bio */}
           <p
             style={{
-              color: 'rgb(106, 107, 110)',
-              fontSize: '13px',
+              color: 'rgb(110,111,115)',
+              fontSize: '14px',
               textAlign: 'center',
-              lineHeight: 1.6,
+              lineHeight: 1.65,
               margin: 0,
+              maxWidth: '230px',
             }}
           >
             {profile?.bio ?? 'A designer who creates beautiful digital experiences.'}
           </p>
 
           {/* Social icons */}
-          <div style={{ display: 'flex', gap: '22px', alignItems: 'center', marginTop: '6px' }}>
+          <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginTop: '4px' }}>
             {socialLinks.map(({ key, Icon, label }) => {
               const href = (profile?.socialLinks as Record<string, string> | undefined)?.[key]
               return (
@@ -152,9 +205,10 @@ export default function ProfileCard({ profile }: Props) {
                   target={href ? '_blank' : undefined}
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="text-accent-orange hover:opacity-70 transition-opacity"
+                  style={{ color: 'rgb(244,108,56)', display: 'flex' }}
+                  className="hover:opacity-70 transition-opacity"
                 >
-                  <Icon size={20} />
+                  <Icon size={22} />
                 </a>
               )
             })}
