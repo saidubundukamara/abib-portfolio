@@ -113,7 +113,7 @@ export default function ProfileCard({ profile }: Props) {
         </svg>
 
         {/* ── Photo ───────────────────────────────────────────────── */}
-        <div style={{ padding: '14px 14px 0 14px', width: '100%' }}>
+        <div style={{ padding: '14px 44px', width: '100%' }}>
           <div
             style={{
               position: 'relative',
