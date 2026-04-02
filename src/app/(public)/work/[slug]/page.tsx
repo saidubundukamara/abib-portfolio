@@ -12,6 +12,8 @@ import FadeContent from '@/components/public/FadeContent'
 import { canonicalUrl, ogImages } from '@/lib/seo'
 import ContactSection from '@/components/public/ContactSection'
 
+import { isValidUrl } from '@/lib/url'
+
 interface Props {
   params: Promise<{ slug: string }>
 }
@@ -90,7 +92,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen pt-24 pb-20">
       {/* Cover image */}
-      {s.coverImageUrl && (
+      {s.coverImageUrl && isValidUrl(s.coverImageUrl) && (
         <FadeContent duration={800} ease="power2.out">
           <div className="relative w-full h-[40vh] md:h-[55vh] bg-[rgba(255,255,255,0.05)]">
             <Image
