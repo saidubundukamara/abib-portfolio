@@ -55,8 +55,9 @@ export default function TiptapEditor({ content, onChange, placeholder = 'Start w
   const [showLinkInput, setShowLinkInput] = useState(false)
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
-      StarterKit,
+      StarterKit.configure({ link: false }),
       Image.configure({ inline: false }),
       Link.configure({ openOnClick: false, HTMLAttributes: { target: '_blank', rel: 'noopener noreferrer' } }),
       Youtube.configure({ width: 720, height: 405 }),
