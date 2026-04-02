@@ -60,8 +60,8 @@ export default function ThoughtForm({ initialData }: Props) {
       }
 
       const result = initialData
-        ? await updateThought(initialData._id, data)
-        : await createThought(data)
+        ? await updateThought(initialData._id, JSON.parse(JSON.stringify(data)))
+        : await createThought(JSON.parse(JSON.stringify(data)))
 
       if (!result.success) {
         setError(result.error ?? 'Something went wrong')

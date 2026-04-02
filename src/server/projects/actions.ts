@@ -48,9 +48,9 @@ export async function createProject(data: unknown) {
   try {
     await connectDB()
     const slug = slugify(parsed.data.title, { lower: true, strict: true })
-    const project = await Project.create({ ...parsed.data, slug })
+    await Project.create({ ...parsed.data, slug })
     revalidate()
-    return { success: true, data: serialize(project.toObject()) }
+    return { success: true }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to create project'
     return { success: false, error: msg }
@@ -74,7 +74,7 @@ export async function updateProject(id: string, data: unknown) {
     )
     if (!project) return { success: false, error: 'Project not found' }
     revalidate()
-    return { success: true, data: serialize(project.toObject()) }
+    return { success: true }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to update project'
     return { success: false, error: msg }

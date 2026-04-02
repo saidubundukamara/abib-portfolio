@@ -44,9 +44,9 @@ export async function createThought(data: unknown) {
   try {
     await connectDB()
     const slug = slugify(parsed.data.title, { lower: true, strict: true })
-    const thought = await DesignThought.create({ ...parsed.data, slug })
+    await DesignThought.create({ ...parsed.data, slug })
     revalidate()
-    return { success: true, data: serialize(thought.toObject()) }
+    return { success: true }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to create thought'
     return { success: false, error: msg }
@@ -70,7 +70,7 @@ export async function updateThought(id: string, data: unknown) {
     Object.assign(thought, parsed.data)
     await thought.save()
     revalidate()
-    return { success: true, data: serialize(thought.toObject()) }
+    return { success: true }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to update thought'
     return { success: false, error: msg }
