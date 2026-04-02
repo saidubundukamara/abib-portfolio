@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useEffect, useRef } from 'react'
 import { submitContactMessage } from '@/server/contact/actions'
 import SectionHeading from './SectionHeading'
 
@@ -16,6 +16,13 @@ const inputClass =
 
 export default function ContactSection() {
   const [state, action, pending] = useActionState(submitContactMessage, null)
+  const loadedAtRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (loadedAtRef.current) {
+      loadedAtRef.current.value = String(Date.now())
+    }
+  }, [])
 
   if (state?.success) {
     return (
@@ -34,6 +41,23 @@ export default function ContactSection() {
       <SectionHeading white="LET'S WORK" ghost="TOGETHER" />
 
       <form action={action} className="flex flex-col gap-4">
+        {/* Honeypot — off-screen so bots fill it, humans never see it */}
+        <div
+          aria-hidden="true"
+          style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}
+        >
+          <label htmlFor="website">Website</label>
+          <input
+            id="website"
+            name="website"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+          />
+        </div>
+        {/* Time gate — populated client-side after mount */}
+        <input ref={loadedAtRef} type="hidden" name="form_loaded_at" defaultValue="" />
+
         {/* Name + Email row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1">
