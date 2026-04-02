@@ -63,7 +63,7 @@ export default async function DashboardPage() {
       value: draftItems,
       sub: `${totalMessages} messages`,
       icon: MessageSquare,
-      href: '/admin/projects',
+      href: '/admin/messages',
       color: 'text-cyan-400',
     },
   ]
