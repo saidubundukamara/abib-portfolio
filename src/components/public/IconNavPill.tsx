@@ -7,7 +7,7 @@ import { Home, FolderOpen, Briefcase, Wrench, PenSquare } from 'lucide-react'
 const navItems = [
   { Icon: Home,       href: '/',           label: 'Home'       },
   { Icon: FolderOpen, href: '/work',       label: 'Projects'   },
-  { Icon: Briefcase,  href: '/experience', label: 'Experience' },
+  // { Icon: Briefcase,  href: '/experience', label: 'Experience' },
   { Icon: Wrench,     href: '/tools',      label: 'Tools'      },
   { Icon: PenSquare,  href: '/thoughts',   label: 'Thoughts'   },
 ]
