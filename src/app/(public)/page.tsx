@@ -1,9 +1,5 @@
-import { connectDB } from '@/lib/mongodb'
-import { serialize } from '@/lib/serialize'
-import { Profile } from '@/models/Profile'
-import { Project } from '@/models/Project'
-import { Tool } from '@/models/Tool'
-import { DesignThought } from '@/models/DesignThought'
+import { prisma } from '@/lib/prisma'
+import { toSerializedProfile, toSerializedProject, toSerializedTool, toSerializedThought } from '@/lib/adapters'
 
 import ProfileCard from '@/components/public/ProfileCard'
 import StickyProfileWrapper from '@/components/public/StickyProfileWrapper'
@@ -17,7 +13,7 @@ import FadeContent from '@/components/public/FadeContent'
 
 export default async function HomePage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let profile: any = null
+  let serializedProfile: any = null
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let featuredProjects: any[] = []
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,18 +22,28 @@ export default async function HomePage() {
   let thoughts: any[] = []
 
   try {
-    await connectDB()
-    ;[profile, featuredProjects, tools, thoughts] = await Promise.all([
-      Profile.findOne().lean(),
-      Project.find({ published: true }).sort({ publishedAt: -1 }).limit(6).lean(),
-      Tool.find().sort({ order: 1 }).lean(),
-      DesignThought.find({ published: true }).sort({ publishedAt: -1 }).limit(3).lean(),
+    const [profileRow, projectRows, toolRows, thoughtRows] = await Promise.all([
+      prisma.profile.findFirst(),
+      prisma.project.findMany({
+        where:   { published: true },
+        orderBy: { publishedAt: 'desc' },
+        take:    6,
+      }),
+      prisma.tool.findMany({ orderBy: { order: 'asc' } }),
+      prisma.designThought.findMany({
+        where:   { published: true },
+        orderBy: { publishedAt: 'desc' },
+        take:    3,
+      }),
     ])
+
+    serializedProfile = profileRow ? toSerializedProfile(profileRow) : null
+    featuredProjects  = projectRows.map(toSerializedProject)
+    tools             = toolRows.map(toSerializedTool)
+    thoughts          = thoughtRows.map(toSerializedThought)
   } catch {
     // DB not connected — render with empty state
   }
-
-  const serializedProfile = profile ? serialize(profile) : null
 
   return (
     <div className="flex min-h-screen pt-16 max-w-[1400px] mx-auto px-6 lg:px-16 gap-8 lg:gap-12">
@@ -54,16 +60,16 @@ export default async function HomePage() {
           <HeroSection profile={serializedProfile} />
         </FadeContent>
         <FadeContent duration={800} ease="power2.out">
-          <ProjectsSection projects={serialize(featuredProjects)} />
+          <ProjectsSection projects={featuredProjects} />
         </FadeContent>
         <FadeContent duration={800} ease="power2.out">
           <ExperienceSection />
         </FadeContent>
         <FadeContent duration={800} ease="power2.out">
-          <ToolsSection tools={serialize(tools)} />
+          <ToolsSection tools={tools} />
         </FadeContent>
         <FadeContent duration={800} ease="power2.out">
-          <ThoughtsSection thoughts={serialize(thoughts)} />
+          <ThoughtsSection thoughts={thoughts} />
         </FadeContent>
         <FadeContent duration={800} ease="power2.out">
           <ContactSection />

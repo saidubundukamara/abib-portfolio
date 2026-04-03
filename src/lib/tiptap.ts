@@ -116,3 +116,18 @@ export function renderTiptap(content: unknown): string {
     return ''
   }
 }
+
+function extractText(node: Record<string, unknown>): string {
+  if (node.type === 'text') return (node.text as string) ?? ''
+  if (Array.isArray(node.content))
+    return (node.content as Record<string, unknown>[]).map(extractText).join(' ')
+  return ''
+}
+
+export function calcReadTime(content: unknown): number {
+  if (!content || typeof content !== 'object') return 1
+  const wordCount = extractText(content as Record<string, unknown>)
+    .split(/\s+/)
+    .filter(Boolean).length
+  return Math.max(1, Math.ceil(wordCount / 200))
+}

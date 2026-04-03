@@ -3,15 +3,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import type { Metadata } from 'next'
-import { connectDB } from '@/lib/mongodb'
-import { serialize } from '@/lib/serialize'
+import { prisma } from '@/lib/prisma'
+import { toSerializedProject } from '@/lib/adapters'
 import { renderTiptap } from '@/lib/tiptap'
-import { Project } from '@/models/Project'
 import ProjectCard from '@/components/public/ProjectCard'
 import FadeContent from '@/components/public/FadeContent'
 import { canonicalUrl, ogImages } from '@/lib/seo'
 import ContactSection from '@/components/public/ContactSection'
-
 import { isValidUrl } from '@/lib/url'
 
 interface Props {
@@ -20,8 +18,10 @@ interface Props {
 
 export async function generateStaticParams() {
   try {
-    await connectDB()
-    const projects = await Project.find({ published: true }, 'slug').lean()
+    const projects = await prisma.project.findMany({
+      where:  { published: true },
+      select: { slug: true },
+    })
     return projects.map((p) => ({ slug: p.slug }))
   } catch {
     return []
@@ -31,13 +31,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   try {
-    await connectDB()
-    const project = await Project.findOne({ slug, published: true }).lean()
+    const project = await prisma.project.findFirst({ where: { slug, published: true } })
     if (!project) return {}
 
-    const title       = (project.metadata?.ogTitle       as string) || project.title
-    const description = (project.metadata?.ogDescription as string) || project.excerpt
-    const imageUrl    = (project.metadata?.ogImage        as string) || project.coverImageUrl || ''
+    const title       = project.ogTitle       || project.title
+    const description = project.ogDescription || project.excerpt
+    const imageUrl    = project.ogImage        || project.coverImageUrl || ''
 
     return {
       title,
@@ -71,14 +70,18 @@ export default async function ProjectDetailPage({ params }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let related: any[] = []
   try {
-    await connectDB()
-    project = await Project.findOne({ slug, published: true }).lean()
-    if (project) {
-      related = await Project.find({
-        published: true,
-        category: project.category,
-        slug: { $ne: slug },
-      }).limit(3).lean()
+    const projectRow = await prisma.project.findFirst({ where: { slug, published: true } })
+    if (projectRow) {
+      project = toSerializedProject(projectRow)
+      const relatedRows = await prisma.project.findMany({
+        where: {
+          published: true,
+          category:  projectRow.category,
+          slug:      { not: slug },
+        },
+        take: 3,
+      })
+      related = relatedRows.map(toSerializedProject)
     }
   } catch {
     // DB not connected
@@ -87,17 +90,16 @@ export default async function ProjectDetailPage({ params }: Props) {
   if (!project) notFound()
 
   const html = renderTiptap(project.content)
-  const s = serialize(project)
 
   return (
     <div className="min-h-screen pt-24 pb-20">
       {/* Cover image */}
-      {s.coverImageUrl && isValidUrl(s.coverImageUrl) && (
+      {project.coverImageUrl && isValidUrl(project.coverImageUrl) && (
         <FadeContent duration={800} ease="power2.out">
           <div className="relative w-full h-[40vh] md:h-[55vh] bg-[rgba(255,255,255,0.05)]">
             <Image
-              src={s.coverImageUrl}
-              alt={s.title}
+              src={project.coverImageUrl}
+              alt={project.title}
               fill
               className="object-cover"
               priority
@@ -121,22 +123,22 @@ export default async function ProjectDetailPage({ params }: Props) {
           {/* Category + date */}
           <div className="flex items-center gap-4 mb-4">
             <span className="text-[11px] font-bold uppercase tracking-widest text-accent-orange">
-              {s.category.replace(/-/g, ' ')}
+              {project.category.replace(/-/g, ' ')}
             </span>
-            {s.publishedAt && (
+            {project.publishedAt && (
               <time className="text-text-muted text-xs">
-                {format(new Date(s.publishedAt), 'MMMM d, yyyy')}
+                {format(new Date(project.publishedAt), 'MMMM d, yyyy')}
               </time>
             )}
           </div>
 
           {/* Title */}
           <h1 className="font-bold text-text-primary text-3xl md:text-5xl leading-tight mb-4">
-            {s.title}
+            {project.title}
           </h1>
 
           {/* Excerpt */}
-          <p className="text-text-secondary text-lg leading-relaxed mb-10">{s.excerpt}</p>
+          <p className="text-text-secondary text-lg leading-relaxed mb-10">{project.excerpt}</p>
         </FadeContent>
 
         {/* Rich text content */}
@@ -153,14 +155,14 @@ export default async function ProjectDetailPage({ params }: Props) {
         )}
 
         {/* Tools used */}
-        {s.tools && s.tools.length > 0 && (
+        {project.tools && project.tools.length > 0 && (
           <FadeContent duration={600} delay={150} ease="power2.out">
             <div className="mt-12 pt-8 border-t border-[rgba(255,255,255,0.08)]">
               <h3 className="font-bold uppercase tracking-[-0.04em] text-text-secondary text-xs mb-4">
                 Tools Used
               </h3>
               <div className="flex flex-wrap gap-2">
-                {(s.tools as string[]).map((tool: string) => (
+                {(project.tools as string[]).map((tool: string) => (
                   <span
                     key={tool}
                     className="px-3 py-1 rounded-btn bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-text-secondary text-xs"
@@ -182,8 +184,8 @@ export default async function ProjectDetailPage({ params }: Props) {
               </h3>
             </FadeContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {serialize(related).map((p, i) => (
-                <FadeContent key={p._id} duration={600} delay={i * 80} ease="power2.out">
+              {related.map((p, i) => (
+                <FadeContent key={p.id} duration={600} delay={i * 80} ease="power2.out">
                   <ProjectCard project={p} />
                 </FadeContent>
               ))}

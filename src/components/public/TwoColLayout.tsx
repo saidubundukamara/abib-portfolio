@@ -1,21 +1,18 @@
-import { connectDB } from '@/lib/mongodb'
-import { serialize } from '@/lib/serialize'
-import { Profile } from '@/models/Profile'
+import { prisma } from '@/lib/prisma'
+import { toSerializedProfile } from '@/lib/adapters'
 import ProfileCard from './ProfileCard'
 import StickyProfileWrapper from './StickyProfileWrapper'
 import ContactSection from './ContactSection'
 
 export default async function TwoColLayout({ children }: { children: React.ReactNode }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let profile: any = null
+  let serializedProfile: any = null
   try {
-    await connectDB()
-    profile = await Profile.findOne().lean()
+    const profile = await prisma.profile.findFirst()
+    serializedProfile = profile ? toSerializedProfile(profile) : null
   } catch {
     // DB not connected — render with empty profile
   }
-
-  const serializedProfile = profile ? serialize(profile) : null
 
   return (
     <div className="flex min-h-screen pt-16 max-w-[1400px] mx-auto px-6 lg:px-16 gap-8 lg:gap-12">

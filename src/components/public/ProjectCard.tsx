@@ -6,7 +6,7 @@ import type { SerializedProject } from '@/types'
 import { isValidUrl } from '@/lib/url'
 
 interface Props {
-  project: Pick<SerializedProject, '_id' | 'title' | 'slug' | 'excerpt' | 'category' | 'coverImageUrl' | 'publishedAt'>
+  project: Pick<SerializedProject, 'id' | 'title' | 'slug' | 'excerpt' | 'category' | 'coverImageUrl' | 'publishedAt'>
 }
 
 const categoryLabels: Record<string, string> = {

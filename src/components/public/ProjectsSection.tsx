@@ -21,7 +21,7 @@ export default function ProjectsSection({ projects }: Props) {
       ) : (
         <div>
           {projects.map((project, i) => (
-            <FadeContent key={project._id} duration={600} delay={i * 60} ease="power2.out">
+            <FadeContent key={project.id} duration={600} delay={i * 60} ease="power2.out">
               <Link
                 href={`/work/${project.slug}`}
                 className="flex items-center gap-4 py-5 border-b border-[rgba(255,255,255,0.06)]

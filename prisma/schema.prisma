@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Profile {
+  id                String   @id @default(cuid())
+  name              String
+  title             String
+  bio               String
+  avatarUrl         String   @default("")
+  socialDribbble    String   @default("")
+  socialTwitter     String   @default("")
+  socialInstagram   String   @default("")
+  socialEmail       String   @default("")
+  socialYoutube     String   @default("")
+  yearsOfExperience Int      @default(0)
+  projectsCompleted Int      @default(0)
+  worldwideClients  Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Project {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  excerpt       String
+  content       Json?
+  category      String
+  coverImageUrl String    @default("")
+  images        String[]
+  tools         String[]
+  featured      Boolean   @default(false)
+  published     Boolean   @default(false)
+  publishedAt   DateTime?
+  ogTitle       String    @default("")
+  ogDescription String    @default("")
+  ogImage       String    @default("")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model DesignThought {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  excerpt       String
+  content       Json?
+  coverImageUrl String    @default("")
+  readTime      Int       @default(1)
+  published     Boolean   @default(false)
+  publishedAt   DateTime?
+  ogTitle       String    @default("")
+  ogDescription String    @default("")
+  ogImage       String    @default("")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Certification {
+  id            String   @id @default(cuid())
+  name          String
+  issuer        String
+  year          Int
+  credentialUrl String   @default("")
+  badgeImageUrl String   @default("")
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Tool {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  logoUrl     String   @default("")
+  externalUrl String   @default("")
+  category    String   @default("")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  budget    String   @default("")
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

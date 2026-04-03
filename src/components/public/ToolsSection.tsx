@@ -17,7 +17,7 @@ export default function ToolsSection({ tools }: Props) {
       ) : (
         <div className="grid grid-cols-2 gap-4">
           {tools.map((tool, i) => (
-            <FadeContent key={tool._id} duration={600} delay={i * 80} ease="power2.out">
+            <FadeContent key={tool.id} duration={600} delay={i * 80} ease="power2.out">
               <ToolCard tool={tool} />
             </FadeContent>
           ))}

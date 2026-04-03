@@ -2,9 +2,8 @@
 
 import { auth } from '@/auth'
 import { revalidatePath } from 'next/cache'
-import { connectDB } from '@/lib/mongodb'
-import { Tool } from '@/models/Tool'
-import { serialize } from '@/lib/serialize'
+import { prisma } from '@/lib/prisma'
+import { toSerializedTool } from '@/lib/adapters'
 import { z } from 'zod'
 
 const ToolSchema = z.object({
@@ -35,10 +34,9 @@ export async function createTool(data: unknown) {
   }
 
   try {
-    await connectDB()
-    const tool = await Tool.create(parsed.data)
+    const tool = await prisma.tool.create({ data: parsed.data })
     revalidate()
-    return { success: true, data: serialize(tool.toObject()) }
+    return { success: true, data: toSerializedTool(tool) }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to create tool'
     return { success: false, error: msg }
@@ -54,11 +52,9 @@ export async function updateTool(id: string, data: unknown) {
   }
 
   try {
-    await connectDB()
-    const tool = await Tool.findByIdAndUpdate(id, { $set: parsed.data }, { new: true })
-    if (!tool) return { success: false, error: 'Tool not found' }
+    const tool = await prisma.tool.update({ where: { id }, data: parsed.data })
     revalidate()
-    return { success: true, data: serialize(tool.toObject()) }
+    return { success: true, data: toSerializedTool(tool) }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to update tool'
     return { success: false, error: msg }
@@ -69,8 +65,7 @@ export async function deleteTool(id: string) {
   await requireAdmin()
 
   try {
-    await connectDB()
-    await Tool.findByIdAndDelete(id)
+    await prisma.tool.delete({ where: { id } })
     revalidate()
     return { success: true }
   } catch {

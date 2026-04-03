@@ -10,7 +10,9 @@ import type { ColumnDef } from '@tanstack/react-table'
 import type { SerializedProject } from '@/types'
 
 function PublishToggle({ project }: { project: SerializedProject }) {
-  const action = toggleProjectPublish.bind(null, project._id, !project.published)
+  async function action() {
+    await toggleProjectPublish(project.id, !project.published)
+  }
   return (
     <form action={action}>
       <button type="submit" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -26,7 +28,7 @@ const columns: ColumnDef<SerializedProject>[] = [
     header: 'Title',
     cell: ({ row }) => (
       <Link
-        href={`/admin/projects/${row.original._id}`}
+        href={`/admin/projects/${row.original.id}`}
         className="font-medium text-foreground hover:text-primary transition-colors"
       >
         {row.original.title}
@@ -72,13 +74,13 @@ const columns: ColumnDef<SerializedProject>[] = [
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
         <Link
-          href={`/admin/projects/${row.original._id}`}
+          href={`/admin/projects/${row.original.id}`}
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           Edit
         </Link>
         <PublishToggle project={row.original} />
-        <DeleteButton action={() => deleteProject(row.original._id)} />
+        <DeleteButton action={() => deleteProject(row.original.id)} />
       </div>
     ),
   },

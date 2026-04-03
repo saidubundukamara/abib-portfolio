@@ -3,10 +3,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import type { Metadata } from 'next'
-import { connectDB } from '@/lib/mongodb'
-import { serialize } from '@/lib/serialize'
+import { prisma } from '@/lib/prisma'
+import { toSerializedThought } from '@/lib/adapters'
 import { renderTiptap } from '@/lib/tiptap'
-import { DesignThought } from '@/models/DesignThought'
 import FadeContent from '@/components/public/FadeContent'
 import { canonicalUrl, ogImages } from '@/lib/seo'
 import ContactSection from '@/components/public/ContactSection'
@@ -18,8 +17,10 @@ interface Props {
 
 export async function generateStaticParams() {
   try {
-    await connectDB()
-    const thoughts = await DesignThought.find({ published: true }, 'slug').lean()
+    const thoughts = await prisma.designThought.findMany({
+      where:  { published: true },
+      select: { slug: true },
+    })
     return thoughts.map((t) => ({ slug: t.slug }))
   } catch {
     return []
@@ -29,13 +30,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   try {
-    await connectDB()
-    const thought = await DesignThought.findOne({ slug, published: true }).lean()
+    const thought = await prisma.designThought.findFirst({ where: { slug, published: true } })
     if (!thought) return {}
 
-    const title       = (thought.metadata?.ogTitle       as string) || thought.title
-    const description = (thought.metadata?.ogDescription as string) || thought.excerpt
-    const imageUrl    = (thought.metadata?.ogImage        as string) || thought.coverImageUrl || ''
+    const title       = thought.ogTitle       || thought.title
+    const description = thought.ogDescription || thought.excerpt
+    const imageUrl    = thought.ogImage        || thought.coverImageUrl || ''
 
     return {
       title,
@@ -67,8 +67,8 @@ export default async function ThoughtDetailPage({ params }: Props) {
 
   let thought = null
   try {
-    await connectDB()
-    thought = await DesignThought.findOne({ slug, published: true }).lean()
+    const row = await prisma.designThought.findFirst({ where: { slug, published: true } })
+    if (row) thought = toSerializedThought(row)
   } catch {
     // DB not connected
   }
@@ -76,17 +76,16 @@ export default async function ThoughtDetailPage({ params }: Props) {
   if (!thought) notFound()
 
   const html = renderTiptap(thought.content)
-  const s = serialize(thought)
 
   return (
     <div className="min-h-screen pt-24 pb-20">
       {/* Cover image */}
-      {s.coverImageUrl && isValidUrl(s.coverImageUrl) && (
+      {thought.coverImageUrl && isValidUrl(thought.coverImageUrl) && (
         <FadeContent duration={800} ease="power2.out">
           <div className="relative w-full h-[40vh] md:h-[55vh] bg-[rgba(255,255,255,0.05)]">
             <Image
-              src={s.coverImageUrl}
-              alt={s.title}
+              src={thought.coverImageUrl}
+              alt={thought.title}
               fill
               className="object-cover"
               priority
@@ -109,20 +108,20 @@ export default async function ThoughtDetailPage({ params }: Props) {
 
           {/* Meta */}
           <div className="flex items-center gap-4 mb-4 text-text-muted text-xs">
-            {s.publishedAt && (
-              <time>{format(new Date(s.publishedAt), 'MMMM d, yyyy')}</time>
+            {thought.publishedAt && (
+              <time>{format(new Date(thought.publishedAt), 'MMMM d, yyyy')}</time>
             )}
             <span>·</span>
-            <span>{s.readTime} min read</span>
+            <span>{thought.readTime} min read</span>
           </div>
 
           {/* Title */}
           <h1 className="font-bold text-text-primary text-3xl md:text-5xl leading-tight mb-4">
-            {s.title}
+            {thought.title}
           </h1>
 
           {/* Excerpt */}
-          <p className="text-text-secondary text-lg leading-relaxed mb-10">{s.excerpt}</p>
+          <p className="text-text-secondary text-lg leading-relaxed mb-10">{thought.excerpt}</p>
         </FadeContent>
 
         {/* Rich text */}

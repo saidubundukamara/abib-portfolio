@@ -1,17 +1,13 @@
-import { connectDB } from '@/lib/mongodb'
-import { ContactMessage } from '@/models/ContactMessage'
-import { serialize } from '@/lib/serialize'
+import { prisma } from '@/lib/prisma'
+import { toSerializedMessage } from '@/lib/adapters'
 import { MessagesTable } from '@/components/admin/MessagesTable'
 import type { Metadata } from 'next'
-import type { SerializedContactMessage } from '@/types'
 
 export const metadata: Metadata = { title: 'Messages' }
 
 export default async function MessagesPage() {
-  await connectDB()
-  const messages = serialize(
-    await ContactMessage.find().sort({ createdAt: -1 }).lean()
-  ) as SerializedContactMessage[]
+  const rows = await prisma.contactMessage.findMany({ orderBy: { createdAt: 'desc' } })
+  const messages = rows.map(toSerializedMessage)
 
   return (
     <div>

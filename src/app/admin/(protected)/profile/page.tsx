@@ -1,15 +1,12 @@
-import { connectDB } from '@/lib/mongodb'
-import { Profile } from '@/models/Profile'
-import { serialize } from '@/lib/serialize'
+import { prisma } from '@/lib/prisma'
+import { toSerializedProfile } from '@/lib/adapters'
 import ProfileForm from '@/components/admin/ProfileForm'
 import type { Metadata } from 'next'
-import type { SerializedProfile } from '@/types'
 
 export const metadata: Metadata = { title: 'Profile' }
 
 export default async function ProfilePage() {
-  await connectDB()
-  const profile = await Profile.findOne().lean()
+  const profile = await prisma.profile.findFirst()
 
   return (
     <div>
@@ -19,7 +16,7 @@ export default async function ProfilePage() {
           Manage your public-facing bio, stats, and social links
         </p>
       </div>
-      <ProfileForm initialData={profile ? (serialize(profile) as SerializedProfile) : undefined} />
+      <ProfileForm initialData={profile ? toSerializedProfile(profile) : undefined} />
     </div>
   )
 }

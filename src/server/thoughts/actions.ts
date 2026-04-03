@@ -2,9 +2,8 @@
 
 import { auth } from '@/auth'
 import { revalidatePath } from 'next/cache'
-import { connectDB } from '@/lib/mongodb'
-import { DesignThought } from '@/models/DesignThought'
-import { serialize } from '@/lib/serialize'
+import { prisma } from '@/lib/prisma'
+import { calcReadTime } from '@/lib/tiptap'
 import { z } from 'zod'
 import slugify from 'slugify'
 
@@ -42,9 +41,21 @@ export async function createThought(data: unknown) {
   }
 
   try {
-    await connectDB()
-    const slug = slugify(parsed.data.title, { lower: true, strict: true })
-    await DesignThought.create({ ...parsed.data, slug })
+    const { metadata, ...rest } = parsed.data
+    const slug     = slugify(parsed.data.title, { lower: true, strict: true })
+    const readTime = calcReadTime(rest.content)
+
+    await prisma.designThought.create({
+      data: {
+        ...rest,
+        slug,
+        readTime,
+        publishedAt:   rest.published ? new Date() : null,
+        ogTitle:       metadata.ogTitle,
+        ogDescription: metadata.ogDescription,
+        ogImage:       metadata.ogImage,
+      },
+    })
     revalidate()
     return { success: true }
   } catch (err) {
@@ -62,13 +73,35 @@ export async function updateThought(id: string, data: unknown) {
   }
 
   try {
-    await connectDB()
-    // Use .save() so pre-save hook recalculates readTime
-    const thought = await DesignThought.findById(id)
-    if (!thought) return { success: false, error: 'Thought not found' }
+    const { metadata, ...rest } = parsed.data
+    const readTime = calcReadTime(rest.content)
 
-    Object.assign(thought, parsed.data)
-    await thought.save()
+    // Replicate the Mongoose pre-save publishedAt hook:
+    // only set publishedAt when first transitioning to published
+    const existing = await prisma.designThought.findUnique({
+      where:  { id },
+      select: { published: true, publishedAt: true },
+    })
+    if (!existing) return { success: false, error: 'Thought not found' }
+
+    const publishedAt =
+      !existing.published && rest.published && !existing.publishedAt
+        ? new Date()
+        : rest.published
+        ? existing.publishedAt
+        : null
+
+    await prisma.designThought.update({
+      where: { id },
+      data: {
+        ...rest,
+        readTime,
+        publishedAt,
+        ogTitle:       metadata.ogTitle,
+        ogDescription: metadata.ogDescription,
+        ogImage:       metadata.ogImage,
+      },
+    })
     revalidate()
     return { success: true }
   } catch (err) {
@@ -81,8 +114,7 @@ export async function deleteThought(id: string) {
   await requireAdmin()
 
   try {
-    await connectDB()
-    await DesignThought.findByIdAndDelete(id)
+    await prisma.designThought.delete({ where: { id } })
     revalidate()
     return { success: true }
   } catch {
@@ -94,10 +126,12 @@ export async function toggleThoughtPublish(id: string, published: boolean) {
   await requireAdmin()
 
   try {
-    await connectDB()
-    await DesignThought.findByIdAndUpdate(id, {
-      published,
-      publishedAt: published ? new Date() : null,
+    await prisma.designThought.update({
+      where: { id },
+      data: {
+        published,
+        publishedAt: published ? new Date() : null,
+      },
     })
     revalidate()
     return { success: true }

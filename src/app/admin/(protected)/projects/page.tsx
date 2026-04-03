@@ -1,16 +1,14 @@
-import { connectDB } from '@/lib/mongodb'
-import { Project } from '@/models/Project'
-import { serialize } from '@/lib/serialize'
+import { prisma } from '@/lib/prisma'
+import { toSerializedProject } from '@/lib/adapters'
 import { ProjectsTable } from '@/components/admin/ProjectsTable'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import type { SerializedProject } from '@/types'
 
 export const metadata: Metadata = { title: 'Projects' }
 
 export default async function ProjectsPage() {
-  await connectDB()
-  const projects = serialize(await Project.find().sort({ createdAt: -1 }).lean()) as SerializedProject[]
+  const rows = await prisma.project.findMany({ orderBy: { createdAt: 'desc' } })
+  const projects = rows.map(toSerializedProject)
 
   return (
     <div>

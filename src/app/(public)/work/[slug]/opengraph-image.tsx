@@ -1,6 +1,5 @@
 import { ImageResponse } from 'next/og'
-import { connectDB } from '@/lib/mongodb'
-import { Project } from '@/models/Project'
+import { prisma } from '@/lib/prisma'
 
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
@@ -16,14 +15,10 @@ export default async function Image({
   let coverImageUrl = ''
 
   try {
-    await connectDB()
-    const project = await Project.findOne(
-      { slug, published: true },
-      'title coverImageUrl metadata',
-    ).lean()
+    const project = await prisma.project.findFirst({ where: { slug, published: true } })
     if (project) {
-      title = (project.metadata?.ogTitle as string) || project.title
-      coverImageUrl = (project.metadata?.ogImage as string) || project.coverImageUrl || ''
+      title = project.ogTitle || project.title
+      coverImageUrl = project.ogImage || project.coverImageUrl || ''
     }
   } catch {
     // fallback to defaults

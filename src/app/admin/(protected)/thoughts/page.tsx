@@ -1,16 +1,14 @@
-import { connectDB } from '@/lib/mongodb'
-import { DesignThought } from '@/models/DesignThought'
-import { serialize } from '@/lib/serialize'
+import { prisma } from '@/lib/prisma'
+import { toSerializedThought } from '@/lib/adapters'
 import { ThoughtsTable } from '@/components/admin/ThoughtsTable'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import type { SerializedThought } from '@/types'
 
 export const metadata: Metadata = { title: 'Thoughts' }
 
 export default async function ThoughtsPage() {
-  await connectDB()
-  const thoughts = serialize(await DesignThought.find().sort({ createdAt: -1 }).lean()) as SerializedThought[]
+  const rows = await prisma.designThought.findMany({ orderBy: { createdAt: 'desc' } })
+  const thoughts = rows.map(toSerializedThought)
 
   return (
     <div>

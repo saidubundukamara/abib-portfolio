@@ -1,7 +1,6 @@
 'use server'
 
-import { connectDB } from '@/lib/mongodb'
-import { ContactMessage } from '@/models/ContactMessage'
+import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -42,8 +41,7 @@ export async function submitContactMessage(
   }
 
   try {
-    await connectDB()
-    await ContactMessage.create(parsed.data)
+    await prisma.contactMessage.create({ data: parsed.data })
     return { success: true }
   } catch {
     return { success: false, error: 'Failed to send message. Please try again.' }
