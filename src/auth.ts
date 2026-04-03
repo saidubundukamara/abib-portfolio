@@ -1,7 +1,6 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
-import { connectDB } from '@/lib/mongodb'
-import { User } from '@/models/User'
+import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 
@@ -20,14 +19,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!parsed.success) return null
 
-        await connectDB()
-        const user = await User.findOne({ email: parsed.data.email }).lean()
+        const user = await prisma.user.findUnique({ where: { email: parsed.data.email } })
         if (!user) return null
 
         const valid = await bcrypt.compare(parsed.data.password, user.password)
         if (!valid) return null
 
-        return { id: user._id.toString(), email: user.email, name: user.name }
+        return { id: user.id, email: user.email, name: user.name }
       },
     }),
   ],

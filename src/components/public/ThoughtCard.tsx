@@ -4,7 +4,7 @@ import { ArrowUpRight } from 'lucide-react'
 import type { SerializedThought } from '@/types'
 
 interface Props {
-  thought: Pick<SerializedThought, '_id' | 'title' | 'slug' | 'excerpt' | 'readTime' | 'publishedAt'>
+  thought: Pick<SerializedThought, 'id' | 'title' | 'slug' | 'excerpt' | 'readTime' | 'publishedAt'>
 }
 
 export default function ThoughtCard({ thought }: Props) {

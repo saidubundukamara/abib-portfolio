@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { connectDB } from '@/lib/mongodb'
-import { serialize } from '@/lib/serialize'
-import { Project } from '@/models/Project'
+import { prisma } from '@/lib/prisma'
+import { toSerializedProject } from '@/lib/adapters'
 import { PROJECT_CATEGORIES, CATEGORY_LABELS } from '@/lib/categories'
 import TwoColLayout from '@/components/public/TwoColLayout'
 import SectionHeading from '@/components/public/SectionHeading'
@@ -24,9 +23,11 @@ export default async function WorkPage({ searchParams }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let projects: any[] = []
   try {
-    await connectDB()
-    const query = { published: true, ...(category ? { category } : {}) }
-    projects = await Project.find(query).sort({ publishedAt: -1 }).lean()
+    const rows = await prisma.project.findMany({
+      where:   { published: true, ...(category ? { category } : {}) },
+      orderBy: { publishedAt: 'desc' },
+    })
+    projects = rows.map(toSerializedProject)
   } catch {
     // DB not connected
   }
@@ -69,8 +70,8 @@ export default async function WorkPage({ searchParams }: Props) {
         <p className="text-text-muted text-sm">No projects found.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {serialize(projects).map((project, i) => (
-            <FadeContent key={project._id} duration={600} delay={i * 80} ease="power2.out">
+          {projects.map((project, i) => (
+            <FadeContent key={project.id} duration={600} delay={i * 80} ease="power2.out">
               <ProjectCard project={project} />
             </FadeContent>
           ))}

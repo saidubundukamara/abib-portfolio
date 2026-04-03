@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
-import { connectDB } from '@/lib/mongodb'
-import { serialize } from '@/lib/serialize'
-import { Tool } from '@/models/Tool'
+import { prisma } from '@/lib/prisma'
+import { toSerializedTool } from '@/lib/adapters'
 import TwoColLayout from '@/components/public/TwoColLayout'
 import ToolsSection from '@/components/public/ToolsSection'
 
@@ -14,15 +13,15 @@ export default async function ToolsPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let tools: any[] = []
   try {
-    await connectDB()
-    tools = await Tool.find().sort({ order: 1 }).lean()
+    const rows = await prisma.tool.findMany({ orderBy: { order: 'asc' } })
+    tools = rows.map(toSerializedTool)
   } catch {
     // DB not connected
   }
 
   return (
     <TwoColLayout>
-      <ToolsSection tools={serialize(tools)} />
+      <ToolsSection tools={tools} />
     </TwoColLayout>
   )
 }

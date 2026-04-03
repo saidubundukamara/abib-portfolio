@@ -2,9 +2,8 @@
 
 import { auth } from '@/auth'
 import { revalidatePath } from 'next/cache'
-import { connectDB } from '@/lib/mongodb'
-import { Certification } from '@/models/Certification'
-import { serialize } from '@/lib/serialize'
+import { prisma } from '@/lib/prisma'
+import { toSerializedCertification } from '@/lib/adapters'
 import { z } from 'zod'
 
 const CertificationSchema = z.object({
@@ -35,10 +34,9 @@ export async function createCertification(data: unknown) {
   }
 
   try {
-    await connectDB()
-    const cert = await Certification.create(parsed.data)
+    const cert = await prisma.certification.create({ data: parsed.data })
     revalidate()
-    return { success: true, data: serialize(cert.toObject()) }
+    return { success: true, data: toSerializedCertification(cert) }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to create certification'
     return { success: false, error: msg }
@@ -54,11 +52,9 @@ export async function updateCertification(id: string, data: unknown) {
   }
 
   try {
-    await connectDB()
-    const cert = await Certification.findByIdAndUpdate(id, { $set: parsed.data }, { new: true })
-    if (!cert) return { success: false, error: 'Certification not found' }
+    const cert = await prisma.certification.update({ where: { id }, data: parsed.data })
     revalidate()
-    return { success: true, data: serialize(cert.toObject()) }
+    return { success: true, data: toSerializedCertification(cert) }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to update certification'
     return { success: false, error: msg }
@@ -69,8 +65,7 @@ export async function deleteCertification(id: string) {
   await requireAdmin()
 
   try {
-    await connectDB()
-    await Certification.findByIdAndDelete(id)
+    await prisma.certification.delete({ where: { id } })
     revalidate()
     return { success: true }
   } catch {

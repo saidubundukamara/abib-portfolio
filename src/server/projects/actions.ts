@@ -2,17 +2,16 @@
 
 import { auth } from '@/auth'
 import { revalidatePath } from 'next/cache'
-import { connectDB } from '@/lib/mongodb'
-import { Project, PROJECT_CATEGORY_VALUES } from '@/models/Project'
-import { serialize } from '@/lib/serialize'
+import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import slugify from 'slugify'
+import { PROJECT_CATEGORIES } from '@/lib/categories'
 
 const ProjectSchema = z.object({
   title:         z.string().min(1, 'Title is required'),
   excerpt:       z.string().min(1, 'Excerpt is required'),
   content:       z.any().optional(),
-  category:      z.enum(PROJECT_CATEGORY_VALUES),
+  category:      z.enum(PROJECT_CATEGORIES),
   coverImageUrl: z.string().optional().default(''),
   images:        z.array(z.string()).optional().default([]),
   tools:         z.array(z.string()).optional().default([]),
@@ -46,11 +45,20 @@ export async function createProject(data: unknown) {
   }
 
   try {
-    await connectDB()
+    const { metadata, ...rest } = parsed.data
     const slug = slugify(parsed.data.title, { lower: true, strict: true })
-    const project = await Project.create({ ...parsed.data, slug })
+    await prisma.project.create({
+      data: {
+        ...rest,
+        slug,
+        publishedAt:   rest.published ? new Date() : null,
+        ogTitle:       metadata.ogTitle,
+        ogDescription: metadata.ogDescription,
+        ogImage:       metadata.ogImage,
+      },
+    })
     revalidate()
-    return { success: true, data: serialize(project.toObject()) }
+    return { success: true }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to create project'
     return { success: false, error: msg }
@@ -66,15 +74,35 @@ export async function updateProject(id: string, data: unknown) {
   }
 
   try {
-    await connectDB()
-    const project = await Project.findByIdAndUpdate(
-      id,
-      { $set: parsed.data },
-      { new: true },
-    )
-    if (!project) return { success: false, error: 'Project not found' }
+    const { metadata, ...rest } = parsed.data
+
+    // Replicate the Mongoose pre-save publishedAt hook:
+    // only set publishedAt when first transitioning to published
+    const existing = await prisma.project.findUnique({
+      where:  { id },
+      select: { published: true, publishedAt: true },
+    })
+    if (!existing) return { success: false, error: 'Project not found' }
+
+    const publishedAt =
+      !existing.published && rest.published && !existing.publishedAt
+        ? new Date()
+        : rest.published
+        ? existing.publishedAt
+        : null
+
+    await prisma.project.update({
+      where: { id },
+      data: {
+        ...rest,
+        publishedAt,
+        ogTitle:       metadata.ogTitle,
+        ogDescription: metadata.ogDescription,
+        ogImage:       metadata.ogImage,
+      },
+    })
     revalidate()
-    return { success: true, data: serialize(project.toObject()) }
+    return { success: true }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to update project'
     return { success: false, error: msg }
@@ -85,8 +113,7 @@ export async function deleteProject(id: string) {
   await requireAdmin()
 
   try {
-    await connectDB()
-    await Project.findByIdAndDelete(id)
+    await prisma.project.delete({ where: { id } })
     revalidate()
     return { success: true }
   } catch {
@@ -98,10 +125,12 @@ export async function toggleProjectPublish(id: string, published: boolean) {
   await requireAdmin()
 
   try {
-    await connectDB()
-    await Project.findByIdAndUpdate(id, {
-      published,
-      publishedAt: published ? new Date() : null,
+    await prisma.project.update({
+      where: { id },
+      data: {
+        published,
+        publishedAt: published ? new Date() : null,
+      },
     })
     revalidate()
     return { success: true }

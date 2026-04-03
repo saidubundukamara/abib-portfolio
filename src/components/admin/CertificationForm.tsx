@@ -41,7 +41,7 @@ export default function CertificationForm({ initialData, onDone }: Props) {
     setError(null)
     startTransition(async () => {
       const result = initialData
-        ? await updateCertification(initialData._id, values)
+        ? await updateCertification(initialData.id, values)
         : await createCertification(values)
 
       if (!result.success) {

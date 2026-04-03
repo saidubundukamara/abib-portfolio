@@ -17,7 +17,7 @@ export default function ThoughtsSection({ thoughts }: Props) {
       ) : (
         <div>
           {thoughts.map((thought, i) => (
-            <FadeContent key={thought._id} duration={600} delay={i * 70} ease="power2.out">
+            <FadeContent key={thought.id} duration={600} delay={i * 70} ease="power2.out">
               <ThoughtCard thought={thought} />
             </FadeContent>
           ))}

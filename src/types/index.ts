@@ -1,23 +1,97 @@
-import type { IProject } from '@/models/Project'
-import type { IDesignThought } from '@/models/DesignThought'
-import type { ITool } from '@/models/Tool'
-import type { IProfile } from '@/models/Profile'
-import type { ICertification } from '@/models/Certification'
+// Manually typed serialized shapes — dates are ISO strings after adapter conversion.
+// These match what components receive as props.
 
-/**
- * After serialize(), _id (BSON ObjectId) becomes a plain string
- * and Date fields become ISO strings.
- */
-export type Serialized<T> = {
-  [K in keyof T]: T[K] extends Date
-    ? string
-    : T[K] extends Date | null
-    ? string | null
-    : T[K]
-} & { _id: string }
+export type SerializedProject = {
+  id:            string
+  title:         string
+  slug:          string
+  excerpt:       string
+  content:       unknown
+  category:      string
+  coverImageUrl: string
+  images:        string[]
+  tools:         string[]
+  featured:      boolean
+  published:     boolean
+  publishedAt:   string | null
+  createdAt:     string
+  updatedAt:     string
+  metadata: {
+    ogTitle:       string
+    ogDescription: string
+    ogImage:       string
+  }
+}
 
-export type SerializedProject       = Serialized<IProject>
-export type SerializedThought       = Serialized<IDesignThought>
-export type SerializedTool          = Serialized<ITool>
-export type SerializedProfile       = Serialized<IProfile>
-export type SerializedCertification = Serialized<ICertification>
+export type SerializedThought = {
+  id:            string
+  title:         string
+  slug:          string
+  excerpt:       string
+  content:       unknown
+  coverImageUrl: string
+  readTime:      number
+  published:     boolean
+  publishedAt:   string | null
+  createdAt:     string
+  updatedAt:     string
+  metadata: {
+    ogTitle:       string
+    ogDescription: string
+    ogImage:       string
+  }
+}
+
+export type SerializedProfile = {
+  id:                string
+  name:              string
+  title:             string
+  bio:               string
+  avatarUrl:         string
+  yearsOfExperience: number
+  projectsCompleted: number
+  worldwideClients:  number
+  createdAt:         string
+  updatedAt:         string
+  socialLinks: {
+    dribbble:  string
+    twitter:   string
+    instagram: string
+    email:     string
+    youtube:   string
+  }
+}
+
+export type SerializedTool = {
+  id:          string
+  name:        string
+  description: string
+  logoUrl:     string
+  externalUrl: string
+  category:    string
+  order:       number
+  createdAt:   string
+  updatedAt:   string
+}
+
+export type SerializedCertification = {
+  id:            string
+  name:          string
+  issuer:        string
+  year:          number
+  credentialUrl: string
+  badgeImageUrl: string
+  order:         number
+  createdAt:     string
+  updatedAt:     string
+}
+
+export type SerializedContactMessage = {
+  id:        string
+  name:      string
+  email:     string
+  budget:    string
+  message:   string
+  createdAt: string
+  updatedAt: string
+}

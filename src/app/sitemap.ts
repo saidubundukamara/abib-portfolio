@@ -1,7 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { connectDB } from '@/lib/mongodb'
-import { Project } from '@/models/Project'
-import { DesignThought } from '@/models/DesignThought'
+import { prisma } from '@/lib/prisma'
 import { SITE_URL } from '@/lib/seo'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -28,23 +26,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   try {
-    await connectDB()
-
     const [projects, thoughts] = await Promise.all([
-      Project.find({ published: true }, 'slug updatedAt').lean(),
-      DesignThought.find({ published: true }, 'slug updatedAt').lean(),
+      prisma.project.findMany({
+        where:  { published: true },
+        select: { slug: true, updatedAt: true },
+      }),
+      prisma.designThought.findMany({
+        where:  { published: true },
+        select: { slug: true, updatedAt: true },
+      }),
     ])
 
     const projectRoutes: MetadataRoute.Sitemap = projects.map((p) => ({
       url: `${SITE_URL}/work/${p.slug}`,
-      lastModified: p.updatedAt ?? new Date(),
+      lastModified: p.updatedAt,
       changeFrequency: 'monthly',
       priority: 0.8,
     }))
 
     const thoughtRoutes: MetadataRoute.Sitemap = thoughts.map((t) => ({
       url: `${SITE_URL}/thoughts/${t.slug}`,
-      lastModified: t.updatedAt ?? new Date(),
+      lastModified: t.updatedAt,
       changeFrequency: 'monthly',
       priority: 0.7,
     }))

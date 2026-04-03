@@ -70,8 +70,8 @@ export default function ProjectForm({ initialData }: Props) {
       }
 
       const result = initialData
-        ? await updateProject(initialData._id, data)
-        : await createProject(data)
+        ? await updateProject(initialData.id, JSON.parse(JSON.stringify(data)))
+        : await createProject(JSON.parse(JSON.stringify(data)))
 
       if (!result.success) {
         setError(result.error ?? 'Something went wrong')

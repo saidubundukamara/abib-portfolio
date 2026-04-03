@@ -86,7 +86,7 @@ export default function ToolsPage() {
           </button>
           <DeleteButton
             action={async () => {
-              const result = await deleteTool(row.original._id)
+              const result = await deleteTool(row.original.id)
               if (result.success) await loadTools()
               return result
             }}

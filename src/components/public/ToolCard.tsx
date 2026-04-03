@@ -2,7 +2,7 @@ import Image from 'next/image'
 import type { SerializedTool } from '@/types'
 
 interface Props {
-  tool: Pick<SerializedTool, '_id' | 'name' | 'description' | 'logoUrl' | 'externalUrl' | 'category'>
+  tool: Pick<SerializedTool, 'id' | 'name' | 'description' | 'logoUrl' | 'externalUrl' | 'category'>
 }
 
 export default function ToolCard({ tool }: Props) {

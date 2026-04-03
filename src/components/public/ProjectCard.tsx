@@ -3,8 +3,10 @@ import Image from 'next/image'
 import { format } from 'date-fns'
 import type { SerializedProject } from '@/types'
 
+import { isValidUrl } from '@/lib/url'
+
 interface Props {
-  project: Pick<SerializedProject, '_id' | 'title' | 'slug' | 'excerpt' | 'category' | 'coverImageUrl' | 'publishedAt'>
+  project: Pick<SerializedProject, 'id' | 'title' | 'slug' | 'excerpt' | 'category' | 'coverImageUrl' | 'publishedAt'>
 }
 
 const categoryLabels: Record<string, string> = {
@@ -27,7 +29,7 @@ export default function ProjectCard({ project }: Props) {
     >
       {/* Cover image */}
       <div className="relative w-full aspect-video bg-[rgba(255,255,255,0.05)]">
-        {coverImageUrl ? (
+        {coverImageUrl && isValidUrl(coverImageUrl) ? (
           <Image
             src={coverImageUrl}
             alt={title}

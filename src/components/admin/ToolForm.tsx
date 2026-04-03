@@ -41,7 +41,7 @@ export default function ToolForm({ initialData, onDone }: Props) {
     setError(null)
     startTransition(async () => {
       const result = initialData
-        ? await updateTool(initialData._id, values)
+        ? await updateTool(initialData.id, values)
         : await createTool(values)
 
       if (!result.success) {

@@ -84,7 +84,7 @@ export default function CertificationsPage() {
           </button>
           <DeleteButton
             action={async () => {
-              const result = await deleteCertification(row.original._id)
+              const result = await deleteCertification(row.original.id)
               if (result.success) await loadCerts()
               return result
             }}

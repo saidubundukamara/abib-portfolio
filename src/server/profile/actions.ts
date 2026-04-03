@@ -2,9 +2,8 @@
 
 import { auth } from '@/auth'
 import { revalidatePath } from 'next/cache'
-import { connectDB } from '@/lib/mongodb'
-import { Profile } from '@/models/Profile'
-import { serialize } from '@/lib/serialize'
+import { prisma } from '@/lib/prisma'
+import { toSerializedProfile } from '@/lib/adapters'
 import { z } from 'zod'
 
 const ProfileSchema = z.object({
@@ -32,16 +31,24 @@ export async function updateProfile(data: unknown) {
     return { success: false, error: parsed.error.issues[0].message }
   }
 
+  const { socialLinks, ...rest } = parsed.data
+  const flatData = {
+    ...rest,
+    socialDribbble:  socialLinks.dribbble,
+    socialTwitter:   socialLinks.twitter,
+    socialInstagram: socialLinks.instagram,
+    socialEmail:     socialLinks.email,
+  }
+
   try {
-    await connectDB()
-    const profile = await Profile.findOneAndUpdate(
-      {},
-      { $set: parsed.data },
-      { new: true, upsert: true },
-    )
+    const profile = await prisma.profile.upsert({
+      where:  { id: 'singleton' },
+      create: { id: 'singleton', ...flatData },
+      update: flatData,
+    })
     revalidatePath('/')
     revalidatePath('/admin/profile')
-    return { success: true, data: serialize(profile.toObject()) }
+    return { success: true, data: toSerializedProfile(profile) }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to update profile'
     return { success: false, error: msg }

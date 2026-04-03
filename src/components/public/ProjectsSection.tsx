@@ -9,6 +9,8 @@ interface Props {
   projects: SerializedProject[]
 }
 
+import { isValidUrl } from '@/lib/url'
+
 export default function ProjectsSection({ projects }: Props) {
   return (
     <section id="projects" className="py-12 lg:py-16">
@@ -19,7 +21,7 @@ export default function ProjectsSection({ projects }: Props) {
       ) : (
         <div>
           {projects.map((project, i) => (
-            <FadeContent key={project._id} duration={600} delay={i * 60} ease="power2.out">
+            <FadeContent key={project.id} duration={600} delay={i * 60} ease="power2.out">
               <Link
                 href={`/work/${project.slug}`}
                 className="flex items-center gap-4 py-5 border-b border-[rgba(255,255,255,0.06)]
@@ -27,7 +29,7 @@ export default function ProjectsSection({ projects }: Props) {
               >
                 {/* Thumbnail */}
                 <div className="relative shrink-0 w-[72px] h-[72px] rounded-lg overflow-hidden bg-[rgba(255,255,255,0.05)]">
-                  {project.coverImageUrl && (
+                  {project.coverImageUrl && isValidUrl(project.coverImageUrl) && (
                     <Image
                       src={project.coverImageUrl}
                       alt={project.title}

@@ -1,9 +1,4 @@
-import { connectDB } from '@/lib/mongodb'
-import { Project } from '@/models/Project'
-import { DesignThought } from '@/models/DesignThought'
-import { Tool } from '@/models/Tool'
-import { Certification } from '@/models/Certification'
-import { ContactMessage } from '@/models/ContactMessage'
+import { prisma } from '@/lib/prisma'
 import { Briefcase, FileText, Wrench, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
@@ -11,8 +6,6 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = { title: 'Dashboard' }
 
 export default async function DashboardPage() {
-  await connectDB()
-
   const [
     totalProjects,
     publishedProjects,
@@ -22,13 +15,13 @@ export default async function DashboardPage() {
     totalCerts,
     totalMessages,
   ] = await Promise.all([
-    Project.countDocuments(),
-    Project.countDocuments({ published: true }),
-    DesignThought.countDocuments(),
-    DesignThought.countDocuments({ published: true }),
-    Tool.countDocuments(),
-    Certification.countDocuments(),
-    ContactMessage.countDocuments(),
+    prisma.project.count(),
+    prisma.project.count({ where: { published: true } }),
+    prisma.designThought.count(),
+    prisma.designThought.count({ where: { published: true } }),
+    prisma.tool.count(),
+    prisma.certification.count(),
+    prisma.contactMessage.count(),
   ])
 
   const draftItems = (totalProjects - publishedProjects) + (totalThoughts - publishedThoughts)
@@ -63,7 +56,7 @@ export default async function DashboardPage() {
       value: draftItems,
       sub: `${totalMessages} messages`,
       icon: MessageSquare,
-      href: '/admin/projects',
+      href: '/admin/messages',
       color: 'text-cyan-400',
     },
   ]

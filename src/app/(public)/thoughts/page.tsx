@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
-import { connectDB } from '@/lib/mongodb'
-import { serialize } from '@/lib/serialize'
-import { DesignThought } from '@/models/DesignThought'
+import { prisma } from '@/lib/prisma'
+import { toSerializedThought } from '@/lib/adapters'
 import TwoColLayout from '@/components/public/TwoColLayout'
 import SectionHeading from '@/components/public/SectionHeading'
 import ThoughtCard from '@/components/public/ThoughtCard'
@@ -16,10 +15,11 @@ export default async function ThoughtsPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let thoughts: any[] = []
   try {
-    await connectDB()
-    thoughts = await DesignThought.find({ published: true })
-      .sort({ publishedAt: -1 })
-      .lean()
+    const rows = await prisma.designThought.findMany({
+      where:   { published: true },
+      orderBy: { publishedAt: 'desc' },
+    })
+    thoughts = rows.map(toSerializedThought)
   } catch {
     // DB not connected
   }
@@ -34,8 +34,8 @@ export default async function ThoughtsPage() {
         <p className="text-text-muted text-sm">No articles published yet.</p>
       ) : (
         <div className="flex flex-col gap-4">
-          {serialize(thoughts).map((thought, i) => (
-            <FadeContent key={thought._id} duration={600} delay={i * 70} ease="power2.out">
+          {thoughts.map((thought, i) => (
+            <FadeContent key={thought.id} duration={600} delay={i * 70} ease="power2.out">
               <ThoughtCard thought={thought} />
             </FadeContent>
           ))}
