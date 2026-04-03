@@ -5,7 +5,7 @@ import ProfileCard from '@/components/public/ProfileCard'
 import StickyProfileWrapper from '@/components/public/StickyProfileWrapper'
 import HeroSection from '@/components/public/HeroSection'
 import ProjectsSection from '@/components/public/ProjectsSection'
-import ExperienceSection from '@/components/public/ExperienceSection'
+// import ExperienceSection from '@/components/public/ExperienceSection'
 import ToolsSection from '@/components/public/ToolsSection'
 import ThoughtsSection from '@/components/public/ThoughtsSection'
 import ContactSection from '@/components/public/ContactSection'
@@ -62,9 +62,9 @@ export default async function HomePage() {
         <FadeContent duration={800} ease="power2.out">
           <ProjectsSection projects={featuredProjects} />
         </FadeContent>
-        <FadeContent duration={800} ease="power2.out">
+        {/* <FadeContent duration={800} ease="power2.out">
           <ExperienceSection />
-        </FadeContent>
+        </FadeContent> */}
         <FadeContent duration={800} ease="power2.out">
           <ToolsSection tools={tools} />
         </FadeContent>
