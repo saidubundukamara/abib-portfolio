@@ -15,10 +15,11 @@ export default function ThoughtCard({ thought }: Props) {
       href={`/thoughts/${slug}`}
       className="flex items-start justify-between gap-4 py-5
         border-b border-[rgba(255,255,255,0.06)]
-        hover:bg-[rgba(255,255,255,0.02)] transition-colors group"
+        hover:bg-[rgba(255,255,255,0.02)] hover:-translate-x-1
+        transition-[background-color,transform] duration-300 ease-out group"
     >
       <div className="flex-1 min-w-0">
-        <h3 className="font-bold text-text-primary text-base leading-snug group-hover:text-accent-orange transition-colors">
+        <h3 className="font-bold text-text-primary text-base leading-snug group-hover:text-accent-orange transition-colors duration-300">
           {title}
         </h3>
         {excerpt && (
@@ -38,7 +39,9 @@ export default function ThoughtCard({ thought }: Props) {
         </div>
       </div>
 
-      <ArrowUpRight size={18} className="text-accent-orange shrink-0 mt-0.5" />
+      <span className="inline-flex shrink-0 mt-0.5 transition-transform duration-300 ease-out group-hover:translate-x-1 group-hover:-translate-y-1">
+        <ArrowUpRight size={18} className="text-accent-orange" />
+      </span>
     </Link>
   )
 }

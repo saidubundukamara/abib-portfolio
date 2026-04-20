@@ -25,16 +25,18 @@ export default function ProjectCard({ project }: Props) {
       href={`/work/${slug}`}
       className="group flex flex-col rounded-card shadow-card overflow-hidden
         bg-[rgba(255,255,255,0.03)] hover:bg-[rgba(255,255,255,0.05)]
-        border border-[rgba(255,255,255,0.06)] transition-colors duration-200"
+        border border-[rgba(255,255,255,0.06)] hover:border-[rgba(255,255,255,0.14)]
+        hover:-translate-y-1 hover:shadow-[0_24px_48px_-16px_rgba(0,0,0,0.5)]
+        transition-[background-color,border-color,transform,box-shadow] duration-300 ease-out"
     >
       {/* Cover image */}
-      <div className="relative w-full aspect-video bg-[rgba(255,255,255,0.05)]">
+      <div className="relative w-full aspect-video bg-[rgba(255,255,255,0.05)] overflow-hidden">
         {coverImageUrl && isValidUrl(coverImageUrl) ? (
           <Image
             src={coverImageUrl}
             alt={title}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
           />
         ) : (
@@ -51,7 +53,7 @@ export default function ProjectCard({ project }: Props) {
           {categoryLabels[category] ?? category}
         </span>
 
-        <h3 className="font-semibold text-text-primary text-base leading-snug line-clamp-2">
+        <h3 className="font-semibold text-text-primary text-base leading-snug line-clamp-2 group-hover:text-accent-orange transition-colors duration-300">
           {title}
         </h3>
 
