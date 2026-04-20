@@ -1,5 +1,11 @@
 import { prisma } from '@/lib/prisma'
-import { toSerializedProfile, toSerializedProject, toSerializedTool, toSerializedThought } from '@/lib/adapters'
+import {
+  toSerializedProfile,
+  toSerializedProject,
+  toSerializedTool,
+  toSerializedThought,
+  toSerializedCertification,
+} from '@/lib/adapters'
 
 import ProfileCard from '@/components/public/ProfileCard'
 import StickyProfileWrapper from '@/components/public/StickyProfileWrapper'
@@ -20,9 +26,11 @@ export default async function HomePage() {
   let tools: any[] = []
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let thoughts: any[] = []
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let certifications: any[] = []
 
   try {
-    const [profileRow, projectRows, toolRows, thoughtRows] = await Promise.all([
+    const [profileRow, projectRows, toolRows, thoughtRows, certRows] = await Promise.all([
       prisma.profile.findFirst(),
       prisma.project.findMany({
         where:   { published: true },
@@ -35,12 +43,14 @@ export default async function HomePage() {
         orderBy: { publishedAt: 'desc' },
         take:    3,
       }),
+      prisma.certification.findMany({ orderBy: { order: 'asc' } }),
     ])
 
     serializedProfile = profileRow ? toSerializedProfile(profileRow) : null
     featuredProjects  = projectRows.map(toSerializedProject)
     tools             = toolRows.map(toSerializedTool)
     thoughts          = thoughtRows.map(toSerializedThought)
+    certifications    = certRows.map(toSerializedCertification)
   } catch {
     // DB not connected — render with empty state
   }
@@ -57,7 +67,7 @@ export default async function HomePage() {
       {/* RIGHT: scrollable content sections */}
       <main className="flex-1 min-w-0 py-8 lg:py-12">
         <FadeContent duration={800} ease="power2.out">
-          <HeroSection profile={serializedProfile} />
+          <HeroSection profile={serializedProfile} certifications={certifications} />
         </FadeContent>
         <FadeContent duration={800} ease="power2.out">
           <ProjectsSection projects={featuredProjects} />

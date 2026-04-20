@@ -25,7 +25,8 @@ export default function ProjectsSection({ projects }: Props) {
               <Link
                 href={`/work/${project.slug}`}
                 className="flex items-center gap-4 py-5 border-b border-[rgba(255,255,255,0.06)]
-                  hover:bg-[rgba(255,255,255,0.02)] transition-colors group"
+                  hover:bg-[rgba(255,255,255,0.02)] hover:-translate-x-1
+                  transition-[background-color,transform] duration-300 ease-out group"
               >
                 {/* Thumbnail */}
                 <div className="relative shrink-0 w-[72px] h-[72px] rounded-lg overflow-hidden bg-[rgba(255,255,255,0.05)]">
@@ -34,7 +35,7 @@ export default function ProjectsSection({ projects }: Props) {
                       src={project.coverImageUrl}
                       alt={project.title}
                       fill
-                      className="object-cover"
+                      className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                       sizes="72px"
                     />
                   )}
@@ -42,7 +43,7 @@ export default function ProjectsSection({ projects }: Props) {
 
                 {/* Text */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-text-primary text-base leading-snug">
+                  <h3 className="font-bold text-text-primary text-base leading-snug transition-colors duration-300 group-hover:text-accent-orange">
                     {project.title}
                   </h3>
                   {project.excerpt && (
@@ -53,7 +54,9 @@ export default function ProjectsSection({ projects }: Props) {
                 </div>
 
                 {/* Arrow */}
-                <ArrowUpRight size={18} className="text-accent-orange shrink-0" />
+                <span className="inline-flex shrink-0 transition-transform duration-300 ease-out group-hover:translate-x-1 group-hover:-translate-y-1">
+                  <ArrowUpRight size={18} className="text-accent-orange" />
+                </span>
               </Link>
             </FadeContent>
           ))}
