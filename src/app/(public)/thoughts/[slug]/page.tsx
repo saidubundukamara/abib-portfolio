@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma'
 import { toSerializedThought } from '@/lib/adapters'
 import { renderTiptap } from '@/lib/tiptap'
 import FadeContent from '@/components/public/FadeContent'
+import SplitTextReveal from '@/components/public/SplitTextReveal'
 import { canonicalUrl, ogImages } from '@/lib/seo'
 import ContactSection from '@/components/public/ContactSection'
 import { isValidUrl } from '@/lib/url'
@@ -117,7 +118,13 @@ export default async function ThoughtDetailPage({ params }: Props) {
 
           {/* Title */}
           <h1 className="font-bold text-text-primary text-3xl md:text-5xl leading-tight mb-4">
-            {thought.title}
+            <SplitTextReveal
+              text={thought.title}
+              triggerOnMount
+              duration={1}
+              stagger={0.03}
+              delay={0.1}
+            />
           </h1>
 
           {/* Excerpt */}

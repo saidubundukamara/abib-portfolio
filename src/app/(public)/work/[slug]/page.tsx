@@ -8,6 +8,7 @@ import { toSerializedProject } from '@/lib/adapters'
 import { renderTiptap } from '@/lib/tiptap'
 import ProjectCard from '@/components/public/ProjectCard'
 import FadeContent from '@/components/public/FadeContent'
+import SplitTextReveal from '@/components/public/SplitTextReveal'
 import { canonicalUrl, ogImages } from '@/lib/seo'
 import ContactSection from '@/components/public/ContactSection'
 import { isValidUrl } from '@/lib/url'
@@ -134,7 +135,13 @@ export default async function ProjectDetailPage({ params }: Props) {
 
           {/* Title */}
           <h1 className="font-bold text-text-primary text-3xl md:text-5xl leading-tight mb-4">
-            {project.title}
+            <SplitTextReveal
+              text={project.title}
+              triggerOnMount
+              duration={1}
+              stagger={0.03}
+              delay={0.1}
+            />
           </h1>
 
           {/* Excerpt */}
