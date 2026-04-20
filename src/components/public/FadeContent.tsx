@@ -16,6 +16,7 @@ interface FadeContentProps extends React.HTMLAttributes<HTMLDivElement> {
   delay?: number;
   threshold?: number;
   initialOpacity?: number;
+  y?: number;
 }
 
 const FadeContent: React.FC<FadeContentProps> = ({
@@ -23,10 +24,11 @@ const FadeContent: React.FC<FadeContentProps> = ({
   container,
   blur = false,
   duration = 1000,
-  ease = 'power2.out',
+  ease = 'power3.out',
   delay = 0,
   threshold = 0.1,
   initialOpacity = 0,
+  y = 28,
   className = '',
   ...props
 }) => {
@@ -46,13 +48,15 @@ const FadeContent: React.FC<FadeContentProps> = ({
 
     gsap.set(el, {
       autoAlpha: initialOpacity,
+      y,
       filter: blur ? 'blur(10px)' : 'blur(0px)',
-      willChange: 'opacity, filter',
+      willChange: 'opacity, filter, transform',
     });
 
     const tl = gsap.timeline({ paused: true, delay: getSeconds(delay) });
     tl.to(el, {
       autoAlpha: 1,
+      y: 0,
       filter: 'blur(0px)',
       duration: getSeconds(duration),
       ease,
